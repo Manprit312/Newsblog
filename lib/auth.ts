@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { query } from './db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -48,14 +48,13 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
 
     try {
       // Verify user still exists
-      const user = await prisma.user.findUnique({
-        where: { id: payload.id },
-        select: { id: true, email: true, name: true, role: true },
-      });
-
-      if (!user) {
+      const result = await query('SELECT id, email, name, role FROM "User" WHERE id = $1', [payload.id]);
+      
+      if (result.rows.length === 0) {
         return null;
       }
+
+      const user = result.rows[0];
 
       return {
         id: user.id,
@@ -75,13 +74,13 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
 
 export async function loginUser(email: string, password: string) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
+    const result = await query('SELECT * FROM "User" WHERE email = $1', [email]);
+    
+    if (result.rows.length === 0) {
       return { error: 'Invalid email or password' };
     }
+
+    const user = result.rows[0];
 
     const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
@@ -103,4 +102,3 @@ export async function loginUser(email: string, password: string) {
     return { error: 'Authentication is temporarily unavailable. Please try again later.' };
   }
 }
-
