@@ -1,4 +1,5 @@
 import { MongoClient, Db, Collection, Document } from 'mongodb';
+import './suppress-warnings';
 
 let client: MongoClient | null = null;
 let db: Db | null = null;
