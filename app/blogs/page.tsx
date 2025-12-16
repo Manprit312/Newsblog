@@ -20,7 +20,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   // Filter by subcategory if provided (check in tags)
   if (subcategory) {
     blogs = blogs.filter((blog) => 
-      blog.tags.some((tag) => tag.toLowerCase() === subcategory.toLowerCase())
+      blog.tags.some((tag: string) => tag.toLowerCase() === subcategory.toLowerCase())
     );
   }
 
@@ -32,7 +32,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
         blog.title.toLowerCase().includes(searchLower) ||
         blog.excerpt.toLowerCase().includes(searchLower) ||
         blog.content.toLowerCase().includes(searchLower) ||
-        blog.tags.some((tag) => tag.toLowerCase().includes(searchLower))
+        blog.tags.some((tag: string) => tag.toLowerCase().includes(searchLower))
     );
   }
 

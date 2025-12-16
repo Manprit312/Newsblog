@@ -79,7 +79,7 @@ export default async function BlogDetailPage({
         {/* Tags */}
         {blog.tags && blog.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-12">
-            {blog.tags.map((tag, index) => (
+            {blog.tags.map((tag: string, index: number) => (
               <span
                 key={index}
                 className="bg-secondary-blue-light text-white px-3 py-1 rounded-full text-sm"

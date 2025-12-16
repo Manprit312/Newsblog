@@ -48,8 +48,8 @@ Create a `.env.local` file in the root directory:
 DATABASE_URL="postgresql://user:password@localhost:5432/newsblogs?schema=public"
 
 # Cloudinary
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
-NEXT_PUBLIC_CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+NEXT_PUBLIC_CLOUDINARY_API=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
 # JWT Secret (optional for future auth)
