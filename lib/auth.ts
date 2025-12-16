@@ -47,8 +47,8 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
     }
 
     try {
-      // Verify user still exists
-      const result = await query('SELECT id, email, name, role FROM "User" WHERE id = $1', [payload.id]);
+      // Verify user still exists with retry logic
+      const result = await query('SELECT id, email, name, role FROM "User" WHERE id = $1', [payload.id], 20000, 2);
       
       if (result.rows.length === 0) {
         return null;
@@ -62,8 +62,17 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
         name: user.name || undefined,
         role: user.role,
       };
-    } catch (error) {
-      console.error('Failed to load current user from database.', error);
+    } catch (error: any) {
+      // Don't log connection errors for getCurrentUser as it's called frequently
+      const isConnectionError = 
+        error.code === 'ETIMEDOUT' || 
+        error.message?.includes('timeout') ||
+        error.message?.includes('Connection terminated') ||
+        error.cause?.message?.includes('Connection terminated');
+      
+      if (!isConnectionError) {
+        console.error('Failed to load current user from database.', error);
+      }
       // If the database is unavailable, treat as unauthenticated
       return null;
     }
@@ -74,7 +83,7 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
 
 export async function loginUser(email: string, password: string) {
   try {
-    const result = await query('SELECT * FROM "User" WHERE email = $1', [email]);
+    const result = await query('SELECT * FROM "User" WHERE email = $1', [email], 20000, 2);
     
     if (result.rows.length === 0) {
       return { error: 'Invalid email or password' };
@@ -97,8 +106,21 @@ export async function loginUser(email: string, password: string) {
     const token = generateToken(payload);
 
     return { token, user: payload };
-  } catch (error) {
-    console.error('Failed to login user due to database error.', error);
+  } catch (error: any) {
+    // Check if it's a connection error
+    const isConnectionError = 
+      error.code === 'ETIMEDOUT' || 
+      error.message?.includes('timeout') ||
+      error.message?.includes('Connection terminated') ||
+      error.cause?.message?.includes('Connection terminated') ||
+      error.code === 'ECONNREFUSED' ||
+      error.code === 'ENOTFOUND';
+    
+    if (isConnectionError) {
+      console.error('Database connection error during login:', error.message || error.code);
+    } else {
+      console.error('Failed to login user due to database error.', error);
+    }
     return { error: 'Authentication is temporarily unavailable. Please try again later.' };
   }
 }

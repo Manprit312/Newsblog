@@ -19,14 +19,16 @@ const getPoolConfig = (): PoolConfig => {
 
   const config: PoolConfig = {
     connectionString,
-    // Connection timeout settings
-    connectionTimeoutMillis: 10000, // 10 seconds to establish connection
-    // Pool settings
-    max: 20, // Maximum number of clients in the pool
-    idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+    // Connection timeout settings - increased for production
+    connectionTimeoutMillis: process.env.NODE_ENV === 'production' ? 30000 : 10000, // 30s in prod, 10s in dev
+    // Pool settings - optimized for serverless/production
+    max: process.env.NODE_ENV === 'production' ? 10 : 20, // Lower max connections in prod for serverless
+    idleTimeoutMillis: process.env.NODE_ENV === 'production' ? 10000 : 30000, // Shorter idle timeout in prod
     // Keep connections alive
     keepAlive: true,
     keepAliveInitialDelayMillis: 10000,
+    // Allow pool to wait for connections
+    allowExitOnIdle: false,
   };
 
   // For remote connections, configure SSL to accept self-signed certificates
@@ -63,34 +65,70 @@ pool.on('connect', () => {
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  // Don't exit process in production - let the pool handle reconnection
+  // In serverless environments, exiting the process is not appropriate
+  if (process.env.NODE_ENV === 'development') {
+    // Only exit in development for easier debugging
+    // process.exit(-1);
+  }
 });
 
 export { pool };
 
-// Helper function to execute queries with timeout
-export async function query(text: string, params?: any[], timeoutMs: number = 30000) {
+// Helper function to execute queries with timeout and retry logic
+export async function query(
+  text: string, 
+  params?: any[], 
+  timeoutMs: number = process.env.NODE_ENV === 'production' ? 20000 : 30000,
+  retries: number = 2
+): Promise<any> {
   const start = Date.now();
-  try {
-    // Use Promise.race to add a timeout wrapper
-    const queryPromise = pool.query(text, params);
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Query timeout')), timeoutMs);
-    });
-    
-    const res = await Promise.race([queryPromise, timeoutPromise]) as any;
-    const duration = Date.now() - start;
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Executed query', { text, duration, rows: res.rowCount });
+  let lastError: any;
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      // Use Promise.race to add a timeout wrapper
+      const queryPromise = pool.query(text, params);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Query timeout')), timeoutMs);
+      });
+      
+      const res = await Promise.race([queryPromise, timeoutPromise]) as any;
+      const duration = Date.now() - start;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Executed query', { text, duration, rows: res.rowCount });
+      }
+      return res;
+    } catch (error: any) {
+      lastError = error;
+      
+      // Check if it's a connection error that might benefit from retry
+      const isConnectionError = 
+        error.code === 'ETIMEDOUT' || 
+        error.message?.includes('timeout') ||
+        error.message?.includes('Connection terminated') ||
+        error.cause?.message?.includes('Connection terminated') ||
+        error.code === 'ECONNREFUSED' ||
+        error.code === 'ENOTFOUND' ||
+        error.code === '57P01'; // Admin shutdown
+      
+      // Retry connection errors (except on last attempt)
+      if (isConnectionError && attempt < retries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt), 5000); // Exponential backoff, max 5s
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      
+      // Don't log timeout errors during build to reduce noise
+      if (error.code !== 'ETIMEDOUT' && !error.message.includes('timeout')) {
+        console.error('Database query error:', error);
+      }
+      throw error;
     }
-    return res;
-  } catch (error: any) {
-    // Don't log timeout errors during build to reduce noise
-    if (error.code !== 'ETIMEDOUT' && !error.message.includes('timeout')) {
-      console.error('Database query error:', error);
-    }
-    throw error;
   }
+  
+  // If we exhausted all retries, throw the last error
+  throw lastError;
 }
 
 // Helper to get a client from the pool
