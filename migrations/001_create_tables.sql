@@ -51,3 +51,4 @@ CREATE TRIGGER update_user_updated_at BEFORE UPDATE ON "User"
 CREATE TRIGGER update_blog_updated_at BEFORE UPDATE ON "Blog"
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+

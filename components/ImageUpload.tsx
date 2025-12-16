@@ -27,17 +27,41 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
         body: formData,
       });
 
-      const data = await response.json();
+      // Check if response is OK
+      if (!response.ok) {
+        // Try to parse as JSON, but handle HTML error pages
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          // If it's not JSON (HTML error page), get status text
+          errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+        }
+        alert(errorMessage);
+        return;
+      }
+
+      // Parse JSON response
+      let data;
+      try {
+        const text = await response.text();
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        alert('Upload failed: Invalid server response');
+        return;
+      }
 
       if (data.success) {
         setPreview(data.url);
         onChange(data.url);
       } else {
-        alert('Upload failed: ' + data.error);
+        alert('Upload failed: ' + (data.error || 'Unknown error'));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      alert('Upload failed. Please try again.');
+      alert('Upload failed: ' + (error.message || 'Please try again.'));
     } finally {
       setUploading(false);
     }
@@ -88,6 +112,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
     </div>
   );
 }
+
 
 
 
