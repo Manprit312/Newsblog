@@ -39,14 +39,10 @@ const formatDate = (date: Date | string | undefined): string => {
 };
 
 const formatBlog = (blog: BlogDocument) => {
-  const idString = blog._id 
-    ? (typeof blog._id === 'string' ? blog._id : blog._id.toString())
-    : '';
-  
   return {
     ...blog,
-    _id: idString,
-    id: idString,
+    _id: blog._id?.toString() || blog._id,
+    id: blog._id?.toString() || blog._id,
     createdAt: formatDate(blog.createdAt),
     updatedAt: formatDate(blog.updatedAt),
   };

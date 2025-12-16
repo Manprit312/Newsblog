@@ -7,7 +7,15 @@ export async function POST(
 ) {
   try {
     // Increment views
-    await query('UPDATE "Blog" SET views = views + 1 WHERE slug = $1', [params.slug]);
+    await query(
+      'blogs',
+      async (collection) => {
+        return await collection.updateOne(
+          { slug: params.slug },
+          { $inc: { views: 1 } }
+        );
+      }
+    );
     
     return NextResponse.json({ success: true });
   } catch (error: any) {

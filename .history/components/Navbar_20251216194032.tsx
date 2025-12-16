@@ -211,7 +211,7 @@ export default function Navbar() {
           </div>
 
           {/* Navigation Links - Clean Horizontal Menu */}
-          <div className="hidden lg:flex items-center justify-center gap-4 xl:gap-6 py-3" >
+          <div className="hidden lg:flex items-center justify-center gap-4 xl:gap-6 py-3" style={{ overflowX: 'auto', overflowY: 'visible' }}>
             <Link
               href="/"
               className={`px-2 py-2 font-bold text-sm uppercase transition-colors border-b-2 whitespace-nowrap ${

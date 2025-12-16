@@ -39,14 +39,10 @@ const formatDate = (date: Date | string | undefined): string => {
 };
 
 const formatBlog = (blog: BlogDocument) => {
-  const idString = blog._id 
-    ? (typeof blog._id === 'string' ? blog._id : blog._id.toString())
-    : '';
-  
   return {
     ...blog,
-    _id: idString,
-    id: idString,
+    _id: blog._id?.toString() || blog._id,
+    id: blog._id?.toString() || blog._id,
     createdAt: formatDate(blog.createdAt),
     updatedAt: formatDate(blog.updatedAt),
   };
@@ -143,11 +139,8 @@ export async function getBlogById(id: string) {
     const result = await query<BlogDocument>(
       'blogs',
       async (collection) => {
-        if (ObjectId.isValid(id)) {
-          return await collection.findOne({ _id: new ObjectId(id) });
-        }
-        // Try as string if ObjectId is not valid
-        return await collection.findOne({ _id: id as any });
+        const objectId = ObjectId.isValid(id) ? new ObjectId(id) : id;
+        return await collection.findOne({ _id: objectId });
       }
     );
     
@@ -238,15 +231,13 @@ export async function updateBlog(id: string, data: {
       return await getBlogById(id);
     }
 
+    const objectId = ObjectId.isValid(id) ? new ObjectId(id) : id;
+    
     const result = await query<BlogDocument>(
       'blogs',
       async (collection) => {
-        const filter = ObjectId.isValid(id) 
-          ? { _id: new ObjectId(id) }
-          : { _id: id as any };
-        
         const updateResult = await collection.findOneAndUpdate(
-          filter,
+          { _id: objectId },
           { $set: updates },
           { returnDocument: 'after' }
         );
@@ -267,13 +258,12 @@ export async function updateBlog(id: string, data: {
 
 export async function deleteBlog(id: string) {
   try {
+    const objectId = ObjectId.isValid(id) ? new ObjectId(id) : id;
+    
     const result = await query(
       'blogs',
       async (collection) => {
-        const filter = ObjectId.isValid(id) 
-          ? { _id: new ObjectId(id) }
-          : { _id: id as any };
-        return await collection.deleteOne(filter);
+        return await collection.deleteOne({ _id: objectId });
       }
     );
     

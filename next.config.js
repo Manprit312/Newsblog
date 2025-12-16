@@ -9,13 +9,6 @@ const nextConfig = {
       },
     ],
   },
-  // Increase body size limit for file uploads
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-    responseLimit: false,
-  },
   // Increase static page generation timeout
   staticPageGenerationTimeout: 120,
 }

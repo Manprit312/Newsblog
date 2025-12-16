@@ -1,4 +1,5 @@
 import { query } from './db';
+import { ObjectId } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -11,6 +12,16 @@ export interface UserPayload {
   name?: string;
   role: string;
 }
+
+type UserDocument = {
+  _id?: ObjectId;
+  email: string;
+  password: string;
+  name?: string;
+  role: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
@@ -48,16 +59,33 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
 
     try {
       // Verify user still exists with retry logic
-      const result = await query('SELECT id, email, name, role FROM "User" WHERE id = $1', [payload.id], 20000, 2);
+      const result = await query<UserDocument>(
+        'users',
+        async (collection) => {
+          if (ObjectId.isValid(payload.id)) {
+            return await collection.findOne(
+              { _id: new ObjectId(payload.id) },
+              { projection: { _id: 1, email: 1, name: 1, role: 1 } }
+            );
+          }
+          // Try as string if ObjectId is not valid
+          return await collection.findOne(
+            { _id: payload.id as any },
+            { projection: { _id: 1, email: 1, name: 1, role: 1 } }
+          );
+        },
+        12000,
+        1
+      );
       
-      if (result.rows.length === 0) {
+      if (!result) {
         return null;
       }
 
-      const user = result.rows[0];
+      const user = result as UserDocument;
 
       return {
-        id: user.id,
+        id: user._id?.toString() || payload.id,
         email: user.email,
         name: user.name || undefined,
         role: user.role,
@@ -83,13 +111,20 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
 
 export async function loginUser(email: string, password: string) {
   try {
-    const result = await query('SELECT * FROM "User" WHERE email = $1', [email], 20000, 2);
+    const result = await query<UserDocument>(
+      'users',
+      async (collection) => {
+        return await collection.findOne({ email });
+      },
+      12000,
+      1
+    );
     
-    if (result.rows.length === 0) {
+    if (!result) {
       return { error: 'Invalid email or password' };
     }
 
-    const user = result.rows[0];
+    const user = result as UserDocument;
 
     const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
@@ -97,7 +132,7 @@ export async function loginUser(email: string, password: string) {
     }
 
     const payload: UserPayload = {
-      id: user.id,
+      id: user._id?.toString() || '',
       email: user.email,
       name: user.name || undefined,
       role: user.role,

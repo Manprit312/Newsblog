@@ -13,16 +13,28 @@ export default async function EditBlogPage({
     notFound();
   }
 
-  const blogData = {
-    _id: blog._id,
+  const blogData: {
+    _id: string;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    featuredImage: string;
+    category: string;
+    tags: string[];
+    author: string;
+    published: boolean;
+    featured: boolean;
+  } = {
+    _id: String(blog._id || blog.id || ''),
     title: blog.title,
     slug: blog.slug,
     excerpt: blog.excerpt,
     content: blog.content,
     featuredImage: blog.featuredImage,
     category: blog.category,
-    tags: blog.tags,
-    author: blog.author,
+    tags: blog.tags || [],
+    author: blog.author || 'Admin',
     published: blog.published,
     featured: blog.featured,
   };

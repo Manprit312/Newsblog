@@ -1,45 +1,30 @@
 require('dotenv').config({ path: '.env.local' });
 require('dotenv').config({ path: '.env' });
-const { Pool } = require('pg');
+const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 
 // Create database connection
-function getPoolConfig() {
+async function getDatabase() {
   let connectionString = process.env.DATABASE_URL;
   
   if (!connectionString) {
     throw new Error('DATABASE_URL environment variable is not set');
   }
 
-  const isLocalhost = connectionString.includes('localhost') || 
-                      connectionString.includes('127.0.0.1') ||
-                      connectionString.includes('::1');
+  // Replace <db_password> placeholder if present
+  const finalConnectionString = connectionString.replace('<db_password>', process.env.DB_PASSWORD || '');
 
-  connectionString = connectionString.replace(/[?&]sslmode=[^&]*/g, '');
+  const client = new MongoClient(finalConnectionString, {
+    serverSelectionTimeoutMS: 30000,
+    connectTimeoutMS: 15000,
+  });
 
-  const config = {
-    connectionString,
-  };
-
-  if (!isLocalhost) {
-    config.ssl = {
-      rejectUnauthorized: false
-    };
-  } else {
-    config.ssl = false;
-  }
-
-  return config;
-}
-
-const pool = new Pool(getPoolConfig());
-
-async function query(text, params) {
-  const res = await pool.query(text, params);
-  return res;
+  await client.connect();
+  return client.db();
 }
 
 async function createAdmin() {
+  let client;
   try {
     // Get email and password from command line arguments or use defaults
     const email = process.argv[2] || 'admin@example.com';
@@ -48,13 +33,15 @@ async function createAdmin() {
 
     console.log(`Creating admin user with email: ${email}`);
     
-    // Check if user already exists
-    const existingUser = await query('SELECT id FROM "User" WHERE email = $1', [email]);
+    const db = await getDatabase();
+    const usersCollection = db.collection('users');
     
-    if (existingUser.rows.length > 0) {
+    // Check if user already exists
+    const existingUser = await usersCollection.findOne({ email });
+    
+    if (existingUser) {
       console.log(`⚠ User with email ${email} already exists!`);
       console.log('To update the password, delete the user first or use a different email.');
-      await pool.end();
       process.exit(1);
     }
 
@@ -62,37 +49,36 @@ async function createAdmin() {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     // Insert the admin user
-    const result = await query(
-      `INSERT INTO "User" (email, password, name, role, "createdAt", "updatedAt")
-       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-       RETURNING id, email, name, role`,
-      [email, hashedPassword, name, 'admin']
-    );
+    const now = new Date();
+    const result = await usersCollection.insertOne({
+      email,
+      password: hashedPassword,
+      name,
+      role: 'admin',
+      createdAt: now,
+      updatedAt: now,
+    });
 
-    const user = result.rows[0];
-    
     console.log('✅ Admin user created successfully!');
     console.log('\nAdmin Credentials:');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`Email:    ${user.email}`);
-    console.log(`Password:  ${password}`);
-    console.log(`Name:      ${user.name}`);
-    console.log(`Role:      ${user.role}`);
+    console.log(`Email:    ${email}`);
+    console.log(`Password: ${password}`);
+    console.log(`Name:     ${name}`);
+    console.log(`Role:     admin`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('\n⚠️  Please save these credentials securely!');
     console.log('You can now login at /admin/login');
     
-    await pool.end();
     process.exit(0);
   } catch (error) {
     console.error('❌ Failed to create admin user:', error.message);
-    await pool.end();
     process.exit(1);
+  } finally {
+    if (client) {
+      await client.close();
+    }
   }
 }
 
 createAdmin();
-
-
-
-

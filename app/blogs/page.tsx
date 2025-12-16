@@ -34,11 +34,17 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
     blogs = blogs.filter((blog: Blog) => blog.category === category);
   }
 
-  // Filter by subcategory if provided (check in tags)
+  // Filter by subcategory if provided (check in tags - case insensitive and partial match)
   if (subcategory) {
-    blogs = blogs.filter((blog: Blog) => 
-      blog.tags?.some((tag: string) => tag.toLowerCase() === subcategory.toLowerCase())
-    );
+    const subcategoryLower = subcategory.toLowerCase();
+    blogs = blogs.filter((blog: Blog) => {
+      if (!blog.tags || blog.tags.length === 0) return false;
+      return blog.tags.some((tag: string) => {
+        const tagLower = tag.toLowerCase();
+        // Exact match or contains the subcategory
+        return tagLower === subcategoryLower || tagLower.includes(subcategoryLower) || subcategoryLower.includes(tagLower);
+      });
+    });
   }
 
   // Filter by search query if provided
@@ -86,15 +92,32 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
 
       {blogs.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-gray-500 text-xl mb-4">
-            {search ? `No results found for "${search}"` : 'No blogs found.'}
+          <p className="text-gray-500 text-xl mb-2">
+            {search 
+              ? `No results found for "${search}"`
+              : subcategory
+              ? `No blogs found for ${category ? category + ' - ' : ''}${subcategory}.`
+              : category
+              ? `No blogs found in ${category} category.`
+              : 'No blogs found.'}
+          </p>
+          <p className="text-gray-400 text-sm mb-4">
+            {subcategory && 'Try selecting a different subcategory or browse all blogs.'}
           </p>
           <a
-            href="/blogs"
-            className="text-secondary-blue hover:text-primary-yellow underline"
+            href={category ? `/blogs?category=${encodeURIComponent(category)}` : '/blogs'}
+            className="text-secondary-blue hover:text-primary-yellow underline mr-4"
           >
-            View All Blogs
+            {category ? `View All ${category} Blogs` : 'View All Blogs'}
           </a>
+          {category && (
+            <a
+              href="/blogs"
+              className="text-secondary-blue hover:text-primary-yellow underline"
+            >
+              View All Categories
+            </a>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

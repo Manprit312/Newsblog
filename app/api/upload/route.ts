@@ -4,7 +4,7 @@ import { getCurrentUser } from '@/lib/auth';
 
 // Configure Cloudinary
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-const apiKey = process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_API_KEY;
+const apiKey = process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_API;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
 if (cloudName && apiKey && apiSecret) {
@@ -43,12 +43,18 @@ export async function POST(request: NextRequest) {
     // Check Cloudinary configuration
     if (!cloudName || !apiKey || !apiSecret) {
       console.error('Cloudinary configuration missing:', {
-        cloudName: !!cloudName,
-        apiKey: !!apiKey,
-        apiSecret: !!apiSecret,
+        cloudName: cloudName || 'MISSING',
+        apiKey: apiKey ? 'SET' : 'MISSING',
+        apiSecret: apiSecret ? 'SET' : 'MISSING',
+        envVars: {
+          CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'MISSING',
+          CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+          CLOUDINARY_API: process.env.CLOUDINARY_API ? 'SET' : 'MISSING',
+          CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+        }
       });
       return NextResponse.json(
-        { success: false, error: 'Image upload service is not configured. Please check environment variables.' },
+        { success: false, error: 'Image upload service is not configured. Please check environment variables (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API or CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET).' },
         { status: 500 }
       );
     }
