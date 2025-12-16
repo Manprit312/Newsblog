@@ -49,7 +49,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/newsblogs?schema=public"
 
 # Cloudinary
 CLOUDINARY_CLOUD_NAME=your_cloud_name
-NEXT_PUBLIC_CLOUDINARY_API=your_api_key
+CLOUDINARY_API=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
 # JWT Secret (optional for future auth)
