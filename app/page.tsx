@@ -5,31 +5,47 @@ import BlogCard from '@/components/BlogCard';
 import { getBlogs } from '@/lib/api';
 import { Clock, Eye, TrendingUp, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
+type Blog = {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  featuredImage: string;
+  category: string;
+  published: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  author?: string;
+  tags?: string[];
+};
+
 export default async function Home() {
   // Fetch all published blogs
-  const allBlogs = await getBlogs({ published: true });
+  const allBlogs = await getBlogs({ published: true }) as Blog[];
 
   // Get featured blog for hero section
-  const featuredBlog = allBlogs.find((blog) => blog.featured) || allBlogs[0];
+  const featuredBlog = allBlogs.find((blog: Blog) => blog.featured) || allBlogs[0];
 
   // Get trending blogs (by views, top 5)
   const trendingBlogs = [...allBlogs]
-    .sort((a, b) => b.views - a.views)
+    .sort((a: Blog, b: Blog) => b.views - a.views)
     .slice(0, 5);
 
   // Get latest blogs (excluding featured)
   const latestBlogs = allBlogs
-    .filter((blog) => blog.slug !== featuredBlog?.slug)
+    .filter((blog: Blog) => blog.slug !== featuredBlog?.slug)
     .slice(0, 6);
 
   // Group blogs by main categories
   const categoryBlogs = {
-    India: allBlogs.filter((blog) => blog.category === 'India').slice(0, 4),
-    World: allBlogs.filter((blog) => blog.category === 'World').slice(0, 4),
-    Sports: allBlogs.filter((blog) => blog.category === 'Sports').slice(0, 4),
-    Entertainment: allBlogs.filter((blog) => blog.category === 'Entertainment').slice(0, 4),
-    Technology: allBlogs.filter((blog) => blog.category === 'Technology').slice(0, 4),
-    Business: allBlogs.filter((blog) => blog.category === 'Business').slice(0, 4),
+    India: allBlogs.filter((blog: Blog) => blog.category === 'India').slice(0, 4),
+    World: allBlogs.filter((blog: Blog) => blog.category === 'World').slice(0, 4),
+    Sports: allBlogs.filter((blog: Blog) => blog.category === 'Sports').slice(0, 4),
+    Entertainment: allBlogs.filter((blog: Blog) => blog.category === 'Entertainment').slice(0, 4),
+    Technology: allBlogs.filter((blog: Blog) => blog.category === 'Technology').slice(0, 4),
+    Business: allBlogs.filter((blog: Blog) => blog.category === 'Business').slice(0, 4),
   };
 
   return (
@@ -77,7 +93,7 @@ export default async function Home() {
                   <h2 className="text-2xl font-bold text-yellow-600 uppercase">FEATURED NEWS</h2>
                 </div>
                 <div className="space-y-6">
-                  {latestBlogs.slice(0, 4).map((blog) => (
+                  {latestBlogs.slice(0, 4).map((blog: Blog) => (
                     <Link key={blog._id} href={`/blog/${blog.slug}`} className="block group">
                       <article className="flex gap-4 pb-6 border-b border-gray-200 last:border-0">
                         <div className="relative h-32 w-full flex-shrink-0 overflow-hidden sm:w-32">
@@ -127,7 +143,7 @@ export default async function Home() {
                     <h2 className="text-2xl font-bold text-yellow-600 uppercase">{category} NEWS</h2>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
-                    {blogs.map((blog) => (
+                    {blogs.map((blog: Blog) => (
                       <BlogCard key={blog._id} blog={blog} />
                     ))}
                   </div>

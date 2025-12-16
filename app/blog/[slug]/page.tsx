@@ -3,12 +3,54 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { getBlogBySlug, getBlogs } from '@/lib/api';
 import BlogCard from '@/components/BlogCard';
+import ViewIncrementer from '@/components/ViewIncrementer';
+
+type Blog = {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  featuredImage: string;
+  category: string;
+  published: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  author?: string;
+  tags?: string[];
+};
+
+// Allow dynamic rendering if static generation fails
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const blogs = await getBlogs({ published: true });
-  return blogs.map((blog) => ({
-    slug: blog.slug,
-  }));
+  try {
+    // Limit to first 100 blogs to avoid timeout during build
+    // For larger sites, consider using ISR or dynamic rendering
+    const blogs = await getBlogs({ published: true, limit: 100 }) as Blog[];
+    return blogs.map((blog: Blog) => ({
+      slug: blog.slug,
+    }));
+  } catch (error: any) {
+    // Handle database connection timeouts and connection errors gracefully
+    // Return empty array to allow dynamic rendering for pages
+    const isConnectionError = 
+      error.code === 'ETIMEDOUT' || 
+      error.message?.includes('timeout') ||
+      error.message?.includes('Connection terminated') ||
+      error.cause?.message?.includes('Connection terminated') ||
+      error.code === 'ECONNREFUSED' ||
+      error.code === 'ENOTFOUND';
+    
+    if (isConnectionError) {
+      console.warn('Database connection issue during static generation. Pages will be rendered dynamically.');
+      return [];
+    }
+    console.error('Error generating static params:', error);
+    // Return empty array to allow dynamic rendering for other pages
+    return [];
+  }
 }
 
 export default async function BlogDetailPage({
@@ -16,7 +58,8 @@ export default async function BlogDetailPage({
 }: {
   params: { slug: string };
 }) {
-  const blog = await getBlogBySlug(params.slug);
+  // Don't increment views during static generation
+  const blog = await getBlogBySlug(params.slug, false);
 
   if (!blog) {
     notFound();
@@ -26,14 +69,15 @@ export default async function BlogDetailPage({
     published: true,
     category: blog.category,
     limit: 3,
-  });
+  }) as Blog[];
 
   const filteredRelated = relatedBlogs.filter(
-    (b) => b.slug !== blog.slug
+    (b: Blog) => b.slug !== blog.slug
   );
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <ViewIncrementer slug={params.slug} />
       <article className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -100,7 +144,7 @@ export default async function BlogDetailPage({
             <div className="h-1 flex-1 bg-primary-yellow"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filteredRelated.slice(0, 3).map((relatedBlog) => (
+            {filteredRelated.slice(0, 3).map((relatedBlog: Blog) => (
               <BlogCard key={relatedBlog._id} blog={relatedBlog} />
             ))}
           </div>

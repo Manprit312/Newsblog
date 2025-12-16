@@ -3,8 +3,24 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import Image from 'next/image';
 
+type Blog = {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  featuredImage: string;
+  category: string;
+  published: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  author?: string;
+  tags?: string[];
+};
+
 export default async function AdminBlogsPage() {
-  const blogs = await getBlogs();
+  const blogs = await getBlogs() as Blog[];
 
   return (
     <div>
@@ -43,7 +59,7 @@ export default async function AdminBlogsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {blogs.map((blog) => (
+              {blogs.map((blog: Blog) => (
                 <tr key={blog._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="relative w-16 h-16 rounded overflow-hidden">

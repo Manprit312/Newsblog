@@ -1,6 +1,23 @@
 import { getBlogs } from '@/lib/api';
 import BlogCard from '@/components/BlogCard';
 
+type Blog = {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  featuredImage: string;
+  category: string;
+  published: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  author?: string;
+  tags?: string[];
+};
+
 interface BlogsPageProps {
   searchParams: { category?: string; subcategory?: string; search?: string };
 }
@@ -10,17 +27,17 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   const subcategory = searchParams.subcategory;
   const search = searchParams.search;
 
-  let blogs = await getBlogs({ published: true });
+  let blogs = await getBlogs({ published: true }) as Blog[];
 
   // Filter by category if provided
   if (category) {
-    blogs = blogs.filter((blog) => blog.category === category);
+    blogs = blogs.filter((blog: Blog) => blog.category === category);
   }
 
   // Filter by subcategory if provided (check in tags)
   if (subcategory) {
-    blogs = blogs.filter((blog) => 
-      blog.tags.some((tag: string) => tag.toLowerCase() === subcategory.toLowerCase())
+    blogs = blogs.filter((blog: Blog) => 
+      blog.tags?.some((tag: string) => tag.toLowerCase() === subcategory.toLowerCase())
     );
   }
 
@@ -28,11 +45,11 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   if (search) {
     const searchLower = search.toLowerCase();
     blogs = blogs.filter(
-      (blog) =>
+      (blog: Blog) =>
         blog.title.toLowerCase().includes(searchLower) ||
         blog.excerpt.toLowerCase().includes(searchLower) ||
         blog.content.toLowerCase().includes(searchLower) ||
-        blog.tags.some((tag: string) => tag.toLowerCase().includes(searchLower))
+        blog.tags?.some((tag: string) => tag.toLowerCase().includes(searchLower))
     );
   }
 
@@ -81,7 +98,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogs.map((blog) => (
+          {blogs.map((blog: Blog) => (
             <BlogCard key={blog._id} blog={blog} />
           ))}
         </div>

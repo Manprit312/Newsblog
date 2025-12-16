@@ -19,6 +19,14 @@ const getPoolConfig = (): PoolConfig => {
 
   const config: PoolConfig = {
     connectionString,
+    // Connection timeout settings
+    connectionTimeoutMillis: 10000, // 10 seconds to establish connection
+    // Pool settings
+    max: 20, // Maximum number of clients in the pool
+    idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+    // Keep connections alive
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10000,
   };
 
   // For remote connections, configure SSL to accept self-signed certificates
@@ -29,11 +37,16 @@ const getPoolConfig = (): PoolConfig => {
     config.ssl = {
       rejectUnauthorized: false
     };
-    console.log('SSL configured for remote database connection (required, self-signed certs allowed)');
+    // Only log in development to reduce build output noise
+    if (process.env.NODE_ENV === 'development') {
+      console.log('SSL configured for remote database connection (required, self-signed certs allowed)');
+    }
   } else {
     // Explicitly disable SSL for localhost
     config.ssl = false;
-    console.log('SSL disabled for localhost connection');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('SSL disabled for localhost connection');
+    }
   }
 
   return config;
@@ -55,18 +68,27 @@ pool.on('error', (err) => {
 
 export { pool };
 
-// Helper function to execute queries
-export async function query(text: string, params?: any[]) {
+// Helper function to execute queries with timeout
+export async function query(text: string, params?: any[], timeoutMs: number = 30000) {
   const start = Date.now();
   try {
-    const res = await pool.query(text, params);
+    // Use Promise.race to add a timeout wrapper
+    const queryPromise = pool.query(text, params);
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Query timeout')), timeoutMs);
+    });
+    
+    const res = await Promise.race([queryPromise, timeoutPromise]) as any;
     const duration = Date.now() - start;
     if (process.env.NODE_ENV === 'development') {
       console.log('Executed query', { text, duration, rows: res.rowCount });
     }
     return res;
-  } catch (error) {
-    console.error('Database query error:', error);
+  } catch (error: any) {
+    // Don't log timeout errors during build to reduce noise
+    if (error.code !== 'ETIMEDOUT' && !error.message.includes('timeout')) {
+      console.error('Database query error:', error);
+    }
     throw error;
   }
 }

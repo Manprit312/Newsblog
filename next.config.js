@@ -16,6 +16,8 @@ const nextConfig = {
     },
     responseLimit: false,
   },
+  // Increase static page generation timeout
+  staticPageGenerationTimeout: 120,
 }
 
 module.exports = nextConfig

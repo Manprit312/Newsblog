@@ -85,19 +85,8 @@ export async function getBlogs(options: GetBlogsOptions = {}) {
         updatedAt: formatDate(blog.updatedAt),
       };
     });
-  } catch (error: any) {
-    // Don't log connection errors during build to reduce noise
-    const isConnectionError = 
-      error.code === 'ETIMEDOUT' || 
-      error.message?.includes('timeout') ||
-      error.message?.includes('Connection terminated') ||
-      error.cause?.message?.includes('Connection terminated') ||
-      error.code === 'ECONNREFUSED' ||
-      error.code === 'ENOTFOUND';
-    
-    if (!isConnectionError) {
-      console.error('Failed to load blogs from database, returning empty list.', error);
-    }
+  } catch (error) {
+    console.error('Failed to load blogs from database, returning empty list.', error);
     return [];
   }
 }
@@ -304,23 +293,13 @@ export async function updateBlog(id: string, data: {
       throw new Error('Blog not found');
     }
 
-    const blog = result.rows[0] as BlogRow;
-
-    const formatDate = (date: Date | string): string => {
-      if (date instanceof Date) {
-        return date.toISOString();
-      }
-      if (typeof date === 'string') {
-        return date;
-      }
-      return new Date(date).toISOString();
-    };
+    const blog = result.rows[0];
 
     return {
       ...blog,
       _id: blog.id,
-      createdAt: formatDate(blog.createdAt),
-      updatedAt: formatDate(blog.updatedAt),
+      createdAt: blog.createdAt?.toISOString() || new Date(blog.createdAt).toISOString(),
+      updatedAt: blog.updatedAt?.toISOString() || new Date(blog.updatedAt).toISOString(),
     };
   } catch (error) {
     console.error('Failed to update blog in database.', error);

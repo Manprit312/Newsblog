@@ -1,11 +1,27 @@
 import { getBlogs } from '@/lib/api';
 import Link from 'next/link';
 
+type Blog = {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  featuredImage: string;
+  category: string;
+  published: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  author?: string;
+  tags?: string[];
+};
+
 export default async function AdminDashboard() {
-  const allBlogs = await getBlogs();
-  const publishedBlogs = allBlogs.filter((blog) => blog.published);
-  const draftBlogs = allBlogs.filter((blog) => !blog.published);
-  const featuredBlogs = allBlogs.filter((blog) => blog.featured);
+  const allBlogs = await getBlogs() as Blog[];
+  const publishedBlogs = allBlogs.filter((blog: Blog) => blog.published);
+  const draftBlogs = allBlogs.filter((blog: Blog) => !blog.published);
+  const featuredBlogs = allBlogs.filter((blog: Blog) => blog.featured);
 
   const stats = [
     {

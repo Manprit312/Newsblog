@@ -6,7 +6,8 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const blog = await getBlogBySlug(params.slug);
+    // Don't increment views in API route - use the view endpoint instead
+    const blog = await getBlogBySlug(params.slug, false);
     
     if (!blog) {
       return NextResponse.json(
@@ -23,6 +24,8 @@ export async function GET(
     );
   }
 }
+
+
 
 
 

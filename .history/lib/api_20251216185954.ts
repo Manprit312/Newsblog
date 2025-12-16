@@ -85,19 +85,8 @@ export async function getBlogs(options: GetBlogsOptions = {}) {
         updatedAt: formatDate(blog.updatedAt),
       };
     });
-  } catch (error: any) {
-    // Don't log connection errors during build to reduce noise
-    const isConnectionError = 
-      error.code === 'ETIMEDOUT' || 
-      error.message?.includes('timeout') ||
-      error.message?.includes('Connection terminated') ||
-      error.cause?.message?.includes('Connection terminated') ||
-      error.code === 'ECONNREFUSED' ||
-      error.code === 'ENOTFOUND';
-    
-    if (!isConnectionError) {
-      console.error('Failed to load blogs from database, returning empty list.', error);
-    }
+  } catch (error) {
+    console.error('Failed to load blogs from database, returning empty list.', error);
     return [];
   }
 }

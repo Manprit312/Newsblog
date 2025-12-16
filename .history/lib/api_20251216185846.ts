@@ -67,37 +67,22 @@ export async function getBlogs(options: GetBlogsOptions = {}) {
     const result = await query(sql, params);
     const blogs = result.rows;
 
-    return blogs.map((blog: BlogRow) => {
-      const formatDate = (date: Date | string): string => {
-        if (date instanceof Date) {
-          return date.toISOString();
-        }
-        if (typeof date === 'string') {
-          return date;
-        }
-        return new Date(date).toISOString();
-      };
-
-      return {
-        ...blog,
-        _id: blog.id,
-        createdAt: formatDate(blog.createdAt),
-        updatedAt: formatDate(blog.updatedAt),
-      };
-    });
-  } catch (error: any) {
-    // Don't log connection errors during build to reduce noise
-    const isConnectionError = 
-      error.code === 'ETIMEDOUT' || 
-      error.message?.includes('timeout') ||
-      error.message?.includes('Connection terminated') ||
-      error.cause?.message?.includes('Connection terminated') ||
-      error.code === 'ECONNREFUSED' ||
-      error.code === 'ENOTFOUND';
-    
-    if (!isConnectionError) {
-      console.error('Failed to load blogs from database, returning empty list.', error);
-    }
+    return blogs.map((blog: BlogRow) => ({
+      ...blog,
+      _id: blog.id,
+      createdAt: blog.createdAt instanceof Date 
+        ? blog.createdAt.toISOString() 
+        : typeof blog.createdAt === 'string' 
+          ? blog.createdAt 
+          : new Date(blog.createdAt).toISOString(),
+      updatedAt: blog.updatedAt instanceof Date 
+        ? blog.updatedAt.toISOString() 
+        : typeof blog.updatedAt === 'string' 
+          ? blog.updatedAt 
+          : new Date(blog.updatedAt).toISOString(),
+    }));
+  } catch (error) {
+    console.error('Failed to load blogs from database, returning empty list.', error);
     return [];
   }
 }
@@ -108,28 +93,18 @@ export async function getBlogBySlug(slug: string, incrementViews: boolean = fals
     
     if (result.rows.length === 0) return null;
 
-    const blog = result.rows[0] as BlogRow;
+    const blog = result.rows[0];
 
     // Only increment views at runtime, not during static generation
     if (incrementViews) {
       await query('UPDATE "Blog" SET views = views + 1 WHERE slug = $1', [slug]);
     }
 
-    const formatDate = (date: Date | string): string => {
-      if (date instanceof Date) {
-        return date.toISOString();
-      }
-      if (typeof date === 'string') {
-        return date;
-      }
-      return new Date(date).toISOString();
-    };
-
     return {
       ...blog,
       _id: blog.id,
-      createdAt: formatDate(blog.createdAt),
-      updatedAt: formatDate(blog.updatedAt),
+      createdAt: blog.createdAt?.toISOString() || new Date(blog.createdAt).toISOString(),
+      updatedAt: blog.updatedAt?.toISOString() || new Date(blog.updatedAt).toISOString(),
     };
   } catch (error) {
     console.error('Failed to load blog by slug from database.', error);
@@ -145,21 +120,19 @@ export async function getBlogById(id: string) {
 
     const blog = result.rows[0] as BlogRow;
 
-    const formatDate = (date: Date | string): string => {
-      if (date instanceof Date) {
-        return date.toISOString();
-      }
-      if (typeof date === 'string') {
-        return date;
-      }
-      return new Date(date).toISOString();
-    };
-
     return {
       ...blog,
       _id: blog.id,
-      createdAt: formatDate(blog.createdAt),
-      updatedAt: formatDate(blog.updatedAt),
+      createdAt: blog.createdAt instanceof Date 
+        ? blog.createdAt.toISOString() 
+        : typeof blog.createdAt === 'string' 
+          ? blog.createdAt 
+          : new Date(blog.createdAt).toISOString(),
+      updatedAt: blog.updatedAt instanceof Date 
+        ? blog.updatedAt.toISOString() 
+        : typeof blog.updatedAt === 'string' 
+          ? blog.updatedAt 
+          : new Date(blog.updatedAt).toISOString(),
     };
   } catch (error) {
     console.error('Failed to load blog by id from database.', error);
@@ -206,23 +179,13 @@ export async function createBlog(data: {
     ];
 
     const result = await query(sql, params);
-    const blog = result.rows[0] as BlogRow;
-
-    const formatDate = (date: Date | string): string => {
-      if (date instanceof Date) {
-        return date.toISOString();
-      }
-      if (typeof date === 'string') {
-        return date;
-      }
-      return new Date(date).toISOString();
-    };
+    const blog = result.rows[0];
 
     return {
       ...blog,
       _id: blog.id,
-      createdAt: formatDate(blog.createdAt),
-      updatedAt: formatDate(blog.updatedAt),
+      createdAt: blog.createdAt?.toISOString() || new Date(blog.createdAt).toISOString(),
+      updatedAt: blog.updatedAt?.toISOString() || new Date(blog.updatedAt).toISOString(),
     };
   } catch (error) {
     console.error('Failed to create blog in database.', error);
@@ -304,23 +267,13 @@ export async function updateBlog(id: string, data: {
       throw new Error('Blog not found');
     }
 
-    const blog = result.rows[0] as BlogRow;
-
-    const formatDate = (date: Date | string): string => {
-      if (date instanceof Date) {
-        return date.toISOString();
-      }
-      if (typeof date === 'string') {
-        return date;
-      }
-      return new Date(date).toISOString();
-    };
+    const blog = result.rows[0];
 
     return {
       ...blog,
       _id: blog.id,
-      createdAt: formatDate(blog.createdAt),
-      updatedAt: formatDate(blog.updatedAt),
+      createdAt: blog.createdAt?.toISOString() || new Date(blog.createdAt).toISOString(),
+      updatedAt: blog.updatedAt?.toISOString() || new Date(blog.updatedAt).toISOString(),
     };
   } catch (error) {
     console.error('Failed to update blog in database.', error);
