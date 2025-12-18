@@ -8,13 +8,19 @@ export async function GET(request: NextRequest) {
     const published = searchParams.get('published');
     const featured = searchParams.get('featured');
     const category = searchParams.get('category');
+    const subcategory = searchParams.get('subcategory');
+    const search = searchParams.get('search');
     const limit = searchParams.get('limit');
+    const skip = searchParams.get('skip');
 
     const blogs = await getBlogs({
       published: published ? published === 'true' : undefined,
       featured: featured ? featured === 'true' : undefined,
       category: category || undefined,
+      subcategory: subcategory || undefined,
+      search: search || undefined,
       limit: limit ? parseInt(limit) : undefined,
+      skip: skip ? parseInt(skip) : undefined,
     });
 
     return NextResponse.json({ success: true, blogs });

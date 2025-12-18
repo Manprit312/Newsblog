@@ -27,41 +27,29 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   const subcategory = searchParams.subcategory;
   const search = searchParams.search;
 
-  let blogs = await getBlogs({ published: true }) as Blog[];
+  // Use API to filter by category/subcategory/search
+  const blogs = await getBlogs({
+    published: true,
+    category: category || undefined,
+    subcategory: subcategory || undefined,
+    search: search || undefined,
+  }) as Blog[];
 
-  // Filter by category if provided
-  if (category) {
-    blogs = blogs.filter((blog: Blog) => blog.category === category);
-  }
-
-  // Filter by subcategory if provided (check in tags - case insensitive and partial match)
-  if (subcategory) {
-    const subcategoryLower = subcategory.toLowerCase();
-    blogs = blogs.filter((blog: Blog) => {
-      if (!blog.tags || blog.tags.length === 0) return false;
-      return blog.tags.some((tag: string) => {
-        const tagLower = tag.toLowerCase();
-        // Exact match or contains the subcategory
-        return tagLower === subcategoryLower || tagLower.includes(subcategoryLower) || subcategoryLower.includes(tagLower);
-      });
-    });
-  }
-
-  // Filter by search query if provided
-  if (search) {
-    const searchLower = search.toLowerCase();
-    blogs = blogs.filter(
-      (blog: Blog) =>
-        blog.title.toLowerCase().includes(searchLower) ||
-        blog.excerpt.toLowerCase().includes(searchLower) ||
-        blog.content.toLowerCase().includes(searchLower) ||
-        blog.tags?.some((tag: string) => tag.toLowerCase().includes(searchLower))
-    );
-  }
-
+  // Format page title
   const pageTitle = subcategory 
-    ? `${category} - ${subcategory}`
-    : category || (search ? `Search: ${search}` : 'All Blogs');
+    ? `${subcategory.charAt(0).toUpperCase() + subcategory.slice(1)}`
+    : category 
+    ? `${category.charAt(0).toUpperCase() + category.slice(1)}`
+    : search 
+    ? `Search: ${search}`
+    : 'All Blogs';
+
+  // Format breadcrumb
+  const breadcrumb = subcategory && category
+    ? `${category} > ${subcategory}`
+    : category
+    ? category
+    : null;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -71,21 +59,38 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
           <h1 className="text-4xl font-bold text-secondary-blue">{pageTitle}</h1>
           <div className="h-1 flex-1 bg-primary-yellow"></div>
         </div>
+        {breadcrumb && (
+          <p className="text-gray-500 text-sm mb-2">
+            {breadcrumb}
+          </p>
+        )}
         <p className="text-gray-600 text-lg">
-          {category
+          {subcategory
+            ? `Discover all ${subcategory} articles${category ? ` in ${category}` : ''}`
+            : category
             ? `Discover all ${category} articles`
             : search
             ? `Search results for "${search}"`
             : 'Discover all our latest news and blog posts'}
         </p>
-        {(category || search) && (
-          <div className="mt-4">
-            <a
-              href="/blogs"
-              className="text-secondary-blue hover:text-primary-yellow underline"
-            >
-              ← View All Blogs
-            </a>
+        {(category || subcategory || search) && (
+          <div className="mt-4 flex gap-4">
+            {subcategory && category && (
+              <a
+                href={`/blogs?category=${encodeURIComponent(category)}`}
+                className="text-secondary-blue hover:text-primary-yellow underline"
+              >
+                ← View All {category} Blogs
+              </a>
+            )}
+            {(category || subcategory) && (
+              <a
+                href="/blogs"
+                className="text-secondary-blue hover:text-primary-yellow underline"
+              >
+                ← View All Blogs
+              </a>
+            )}
           </div>
         )}
       </div>

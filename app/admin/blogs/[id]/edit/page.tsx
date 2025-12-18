@@ -32,7 +32,7 @@ export default async function EditBlogPage({
     excerpt: blog.excerpt,
     content: blog.content,
     featuredImage: blog.featuredImage,
-    category: blog.category,
+    category: blog.category || '',
     tags: blog.tags || [],
     author: blog.author || 'Admin',
     published: blog.published,

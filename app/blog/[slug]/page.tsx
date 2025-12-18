@@ -67,7 +67,7 @@ export default async function BlogDetailPage({
 
   const relatedBlogs = await getBlogs({
     published: true,
-    category: blog.category,
+    category: blog.category || undefined,
     limit: 3,
   }) as Blog[];
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Search, Menu, X, ChevronDown, Lock, Facebook, Twitter, Instagram, Linkedin, Phone, Moon, Sun } from 'lucide-react';
@@ -12,15 +13,61 @@ interface Category {
   subcategories?: { name: string; href: string }[];
 }
 
+interface CategoryData {
+  id: number;
+  name: string;
+  slug: string;
+  subcategories: Array<{
+    id: number;
+    name: string;
+    slug: string;
+  }>;
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
   const { theme, toggleTheme } = useTheme();
 
   const isActive = (path: string) => pathname === path;
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories?active=true');
+        const data = await response.json();
+        
+        if (data.success && data.categories) {
+          const formattedCategories: Category[] = data.categories.map((cat: CategoryData) => ({
+            name: cat.name,
+            href: `/blogs?category=${cat.slug}`,
+            subcategories: cat.subcategories.length > 0
+              ? cat.subcategories.map((sub) => ({
+                  name: sub.name,
+                  href: `/blogs?category=${cat.slug}&subcategory=${sub.slug}`,
+                }))
+              : undefined,
+          }));
+          setCategories(formattedCategories);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+        // Fallback to empty array on error
+        setCategories([]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Close dropdowns when pathname changes
   useEffect(() => {
@@ -28,52 +75,14 @@ export default function Navbar() {
     setMobileDropdown(null);
   }, [pathname]);
 
-  const categories: Category[] = [
-    { name: 'World', href: '/blogs?category=World' },
-    { name: 'Politics', href: '/blogs?category=Politics' },
-    { name: 'Business', href: '/blogs?category=Business' },
-    { name: 'Science', href: '/blogs?category=Science' },
-    {
-      name: 'Tech',
-      href: '/blogs?category=Tech',
-      subcategories: [
-        { name: 'AI & ML', href: '/blogs?category=Tech&subcategory=AI & ML' },
-        { name: 'Mobile', href: '/blogs?category=Tech&subcategory=Mobile' },
-        { name: 'Web', href: '/blogs?category=Tech&subcategory=Web' },
-        { name: 'Gadgets', href: '/blogs?category=Tech&subcategory=Gadgets' },
-      ],
-    },
-    {
-      name: 'Entertainment',
-      href: '/blogs?category=Entertainment',
-      subcategories: [
-        { name: 'Bollywood', href: '/blogs?category=Entertainment&subcategory=Bollywood' },
-        { name: 'Hollywood', href: '/blogs?category=Entertainment&subcategory=Hollywood' },
-        { name: 'TV Shows', href: '/blogs?category=Entertainment&subcategory=TV Shows' },
-        { name: 'Music', href: '/blogs?category=Entertainment&subcategory=Music' },
-      ],
-    },
-    {
-      name: 'Lifestyle',
-      href: '/blogs?category=Lifestyle',
-      subcategories: [
-        { name: 'Health', href: '/blogs?category=Lifestyle&subcategory=Health' },
-        { name: 'Fashion', href: '/blogs?category=Lifestyle&subcategory=Fashion' },
-        { name: 'Food', href: '/blogs?category=Lifestyle&subcategory=Food' },
-      ],
-    },
-    { name: 'Sports', href: '/blogs?category=Sports' },
-    { name: 'Education', href: '/blogs?category=Education' },
-    {
-      name: 'State',
-      href: '/blogs?category=State',
-      subcategories: [
-        { name: 'Madhya Pradesh', href: '/blogs?category=State&subcategory=Madhya Pradesh' },
-        { name: 'Maharashtra', href: '/blogs?category=State&subcategory=Maharashtra' },
-        { name: 'Uttar Pradesh', href: '/blogs?category=State&subcategory=Uttar Pradesh' },
-      ],
-    },
-  ];
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dropdownTimeout) {
+        clearTimeout(dropdownTimeout);
+      }
+    };
+  }, [dropdownTimeout]);
 
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -146,16 +155,21 @@ export default function Navbar() {
         <div className="container mx-auto px-2 sm:px-4 max-w-7xl overflow-visible">
           {/* Logo Section with Search */}
           <div className="flex items-center justify-between py-3 sm:py-4 border-b border-gray-200 overflow-visible">
-            {/* Logo with Red Circle Icon */}
+            {/* Logo with Image */}
             <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
               <div className="relative">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-600 rounded-full flex items-center justify-center shadow-md">
-                  <span className="text-white font-bold text-lg sm:text-xl">N</span>
-                </div>
+                <Image
+                  src="/images/logo.jpeg"
+                  alt="NewsBlogs Logo"
+                  width={48}
+                  height={48}
+                  className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                  priority
+                />
               </div>
               <div className="flex flex-col">
                 <span className="text-xl sm:text-2xl md:text-3xl font-normal text-gray-900 leading-tight dark:text-gray-50">News</span>
-                <span className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight dark:text-gray-50">Line</span>
+                <span className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight dark:text-gray-50">Blogs</span>
               </div>
             </Link>
 
@@ -223,19 +237,37 @@ export default function Navbar() {
               HOME
             </Link>
             
-            {categories.map((category) => (
+            {loadingCategories ? (
+              <div className="px-2 py-2 text-sm text-gray-500">Loading...</div>
+            ) : (
+              categories.map((category) => (
               <div
                 key={category.name}
                 className="relative group"
                 style={{ zIndex: openDropdown === category.name ? 1000 : 'auto' }}
-                onMouseEnter={() => setOpenDropdown(category.name)}
-                onMouseLeave={() => setOpenDropdown(null)}
+                onMouseEnter={() => {
+                  // Clear any pending timeout
+                  if (dropdownTimeout) {
+                    clearTimeout(dropdownTimeout);
+                    setDropdownTimeout(null);
+                  }
+                  setOpenDropdown(category.name);
+                }}
+                onMouseLeave={() => {
+                  // Add a small delay before closing to allow moving to dropdown
+                  const timeout = setTimeout(() => {
+                    setOpenDropdown(null);
+                  }, 150);
+                  setDropdownTimeout(timeout);
+                }}
               >
                 <Link
                   href={category.href}
-                  onClick={() => {
-                    // Close dropdown when main category is clicked
-                    if (!category.subcategories) {
+                  onClick={(e) => {
+                    // If category has subcategories, prevent navigation and keep dropdown open
+                    if (category.subcategories && category.subcategories.length > 0) {
+                      e.preventDefault();
+                    } else {
                       setOpenDropdown(null);
                     }
                   }}
@@ -254,10 +286,20 @@ export default function Navbar() {
                 {/* Dropdown Menu */}
                 {category.subcategories && openDropdown === category.name && (
                   <div 
-                    className="absolute top-full left-0 mt-2 bg-white shadow-xl rounded-md py-2 min-w-[200px] z-[1000] border border-gray-200 dark:bg-gray-900 dark:border-gray-700"
+                    className="absolute top-full left-0 mt-0 bg-white shadow-xl rounded-md py-2 min-w-[200px] z-[1000] border border-gray-200 dark:bg-gray-900 dark:border-gray-700"
                     style={{ position: 'absolute', zIndex: 1000 }}
-                    onMouseEnter={() => setOpenDropdown(category.name)}
-                    onMouseLeave={() => setOpenDropdown(null)}
+                    onMouseEnter={() => {
+                      // Clear any pending timeout when entering dropdown
+                      if (dropdownTimeout) {
+                        clearTimeout(dropdownTimeout);
+                        setDropdownTimeout(null);
+                      }
+                      setOpenDropdown(category.name);
+                    }}
+                    onMouseLeave={() => {
+                      // Close dropdown when leaving
+                      setOpenDropdown(null);
+                    }}
                   >
                     {category.subcategories.map((sub) => (
                       <Link
@@ -266,8 +308,6 @@ export default function Navbar() {
                         className="block px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors text-sm dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-yellow-400"
                         onClick={() => {
                           setOpenDropdown(null);
-                          // Small delay to ensure navigation happens
-                          setTimeout(() => setOpenDropdown(null), 100);
                         }}
                       >
                         {sub.name}
@@ -276,7 +316,8 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-            ))}
+              ))
+            )}
             
             <Link
               href="/blogs"
@@ -333,7 +374,10 @@ export default function Navbar() {
                 Home
               </Link>
               
-              {categories.map((category) => (
+              {loadingCategories ? (
+                <div className="px-4 py-3 text-sm text-gray-500">Loading categories...</div>
+              ) : (
+                categories.map((category) => (
                 <div key={category.name} className="space-y-1">
                   <div className="flex items-center justify-between">
                   <Link
@@ -379,7 +423,8 @@ export default function Navbar() {
                     </div>
                   )}
                 </div>
-              ))}
+              ))
+              )}
               
               <Link
                 href="/blogs"

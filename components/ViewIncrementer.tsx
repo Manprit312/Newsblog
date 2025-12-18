@@ -20,3 +20,4 @@ export default function ViewIncrementer({ slug }: ViewIncrementerProps) {
   return null; // This component doesn't render anything
 }
 
+

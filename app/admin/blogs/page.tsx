@@ -62,14 +62,20 @@ export default async function AdminBlogsPage() {
               {blogs.map((blog: Blog) => (
                 <tr key={blog._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
-                    <div className="relative w-16 h-16 rounded overflow-hidden">
-                      <Image
-                        src={blog.featuredImage}
-                        alt={blog.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+                    {blog.featuredImage ? (
+                      <div className="relative w-16 h-16 rounded overflow-hidden">
+                        <Image
+                          src={blog.featuredImage}
+                          alt={blog.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                        No Image
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="font-semibold text-secondary-blue">

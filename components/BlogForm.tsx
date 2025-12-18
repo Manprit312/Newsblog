@@ -16,7 +16,10 @@ interface BlogFormProps {
     excerpt: string;
     content: string;
     featuredImage: string;
-    category: string;
+    category?: string | null;
+    subcategory?: string | null;
+    categoryId?: number | null;
+    subcategoryId?: number | null;
     tags: string[];
     author: string;
     published: boolean;
@@ -24,21 +27,54 @@ interface BlogFormProps {
   };
 }
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  subcategories: Array<{
+    id: number;
+    name: string;
+    slug: string;
+  }>;
+}
+
 export default function BlogForm({ initialData }: BlogFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     slug: initialData?.slug || '',
     excerpt: initialData?.excerpt || '',
     content: initialData?.content || '',
     featuredImage: initialData?.featuredImage || '',
-    category: initialData?.category || 'General',
+    categoryId: initialData?.categoryId || null,
+    subcategoryId: initialData?.subcategoryId || null,
     tags: initialData?.tags?.join(', ') || '',
     author: initialData?.author || 'Admin',
     published: initialData?.published || false,
     featured: initialData?.featured || false,
   });
+
+  useEffect(() => {
+    // Fetch categories and subcategories
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories?active=true');
+        const data = await response.json();
+        if (data.success) {
+          setCategories(data.categories);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (formData.title && !initialData?.slug) {
@@ -49,6 +85,9 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       setFormData((prev) => ({ ...prev, slug }));
     }
   }, [formData.title, initialData?.slug]);
+
+  const selectedCategory = categories.find(cat => cat.id === formData.categoryId);
+  const availableSubcategories = selectedCategory?.subcategories || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +102,8 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       const payload = {
         ...formData,
         tags: tagsArray,
+        // Clear subcategory if category is changed
+        subcategoryId: formData.categoryId ? formData.subcategoryId : null,
       };
 
       const url = initialData?._id
@@ -159,30 +200,70 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-secondary-blue mb-2">
-            Category *
+            Category
           </label>
-          <select
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
-          >
-            <option value="India">India</option>
-            <option value="World">World</option>
-            <option value="Sports">Sports</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Technology">Technology</option>
-            <option value="Business">Business</option>
-            <option value="Top News">Top News</option>
-            <option value="Latest News">Latest News</option>
-            <option value="Trending News">Trending News</option>
-            <option value="Today News">Today News</option>
-            <option value="General">General</option>
-            <option value="Health">Health</option>
-            <option value="Education">Education</option>
-          </select>
+          {loadingCategories ? (
+            <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100">
+              Loading categories...
+            </div>
+          ) : (
+            <select
+              value={formData.categoryId || ''}
+              onChange={(e) => {
+                const categoryId = e.target.value ? parseInt(e.target.value) : null;
+                setFormData({ 
+                  ...formData, 
+                  categoryId,
+                  subcategoryId: null // Reset subcategory when category changes
+                });
+              }}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+            >
+              <option value="">Select a category (optional)</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            Categories appear in the website header navigation
+          </p>
         </div>
 
+        <div>
+          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+            Subcategory
+          </label>
+          <select
+            value={formData.subcategoryId || ''}
+            onChange={(e) => {
+              const subcategoryId = e.target.value ? parseInt(e.target.value) : null;
+              setFormData({ ...formData, subcategoryId });
+            }}
+            disabled={!formData.categoryId || availableSubcategories.length === 0}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+          >
+            <option value="">Select a subcategory (optional)</option>
+            {availableSubcategories.map((subcategory) => (
+              <option key={subcategory.id} value={subcategory.id}>
+                {subcategory.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Subcategories appear as dropdown items in the header
+          </p>
+          {formData.categoryId && availableSubcategories.length === 0 && (
+            <p className="text-xs text-yellow-600 mt-1">
+              No subcategories available for this category. Add them in Categories management.
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-secondary-blue mb-2">
             Author
@@ -194,22 +275,22 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
           />
         </div>
-      </div>
 
-      <div>
-        <label className="block text-sm font-semibold text-secondary-blue mb-2">
-          Subcategory / Tags (comma-separated)
-        </label>
-        <input
-          type="text"
-          value={formData.tags}
-          onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-          placeholder="e.g., Politics, Cricket, Bollywood (use as subcategory or tags)"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          Add subcategory or tags separated by commas. Examples: Politics, Cricket, Bollywood, AI & ML
-        </p>
+        <div>
+          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+            Tags (comma-separated)
+          </label>
+          <input
+            type="text"
+            value={formData.tags}
+            onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+            placeholder="e.g., breaking, trending, featured"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Additional tags for filtering and search
+          </p>
+        </div>
       </div>
 
       <div className="flex gap-4">
@@ -253,4 +334,3 @@ export default function BlogForm({ initialData }: BlogFormProps) {
     </form>
   );
 }
-

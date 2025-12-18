@@ -1,134 +1,273 @@
-import { query } from './db';
-import { ObjectId } from 'mongodb';
+import { prisma } from './db';
 
 interface GetBlogsOptions {
   published?: boolean;
   featured?: boolean;
   category?: string;
+  categoryId?: number;
+  subcategory?: string;
+  subcategoryId?: number;
   limit?: number;
   skip?: number;
+  search?: string;
 }
 
-// Type for MongoDB blog document
-type BlogDocument = {
-  _id?: ObjectId;
+// Type for Blog
+type Blog = {
+  id: number;
   title: string;
   slug: string;
   excerpt: string;
   content: string;
-  featuredImage: string;
-  category: string;
+  featuredImage: string | null;
   tags: string[];
   author: string;
   published: boolean;
   featured: boolean;
   views: number;
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  categoryId: number | null;
+  subcategoryId: number | null;
+  category: { id: number; name: string; slug: string } | null;
+  subcategory: { id: number; name: string; slug: string } | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
-const formatDate = (date: Date | string | undefined): string => {
-  if (!date) return new Date().toISOString();
-  if (date instanceof Date) {
-    return date.toISOString();
-  }
-  if (typeof date === 'string') {
-    return date;
-  }
-  return new Date(date).toISOString();
-};
-
-const formatBlog = (blog: BlogDocument) => {
-  const idString = blog._id 
-    ? (typeof blog._id === 'string' ? blog._id : blog._id.toString())
-    : '';
-  
+const formatBlog = (blog: Blog) => {
   return {
     ...blog,
-    _id: idString,
-    id: idString,
-    createdAt: formatDate(blog.createdAt),
-    updatedAt: formatDate(blog.updatedAt),
+    _id: blog.id.toString(),
+    id: blog.id.toString(),
+    featuredImage: blog.featuredImage || '',
+    category: blog.category?.name || null,
+    subcategory: blog.subcategory?.name || null,
+    createdAt: blog.createdAt.toISOString(),
+    updatedAt: blog.updatedAt.toISOString(),
   };
 };
 
-export async function getBlogs(options: GetBlogsOptions = {}) {
+// Function to fetch Geneveda blogs from blogs table
+export async function getGenevedaBlogs(options: { published?: boolean; featured?: boolean; search?: string; limit?: number; skip?: number } = {}) {
   try {
-    const filter: any = {};
+    let query = `
+      SELECT 
+        b.id, b.title, b.slug, b.excerpt, b.content, b.image, b.images,
+        b.tags, b.author, b.author_role as "authorRole", b.category, b.read_time as "readTime",
+        b.published, b.featured, b.views, b.published_at as "publishedAt",
+        b.created_at as "createdAt", b.updated_at as "updatedAt"
+      FROM blogs b
+      WHERE 1=1
+    `;
+    const params: any[] = [];
+    let paramIndex = 1;
 
     if (options.published !== undefined) {
-      filter.published = options.published;
+      query += ` AND b.published = $${paramIndex}`;
+      params.push(options.published);
+      paramIndex++;
     }
     if (options.featured !== undefined) {
-      filter.featured = options.featured;
+      query += ` AND b.featured = $${paramIndex}`;
+      params.push(options.featured);
+      paramIndex++;
     }
-    if (options.category) {
-      filter.category = options.category;
+    if (options.search) {
+      query += ` AND (b.title ILIKE $${paramIndex} OR b.excerpt ILIKE $${paramIndex} OR b.content ILIKE $${paramIndex})`;
+      const searchTerm = `%${options.search}%`;
+      params.push(searchTerm, searchTerm, searchTerm);
+      paramIndex += 3;
     }
 
-    const sort: any = {};
-    if (options.featured !== undefined && options.featured) {
-      sort.featured = -1;
+    query += ` ORDER BY b.created_at DESC`;
+
+    if (options.skip) {
+      query += ` OFFSET $${paramIndex}`;
+      params.push(options.skip);
+      paramIndex++;
     }
-    sort.createdAt = -1;
+    if (options.limit) {
+      query += ` LIMIT $${paramIndex}`;
+      params.push(options.limit);
+    }
 
-    const result = await query<BlogDocument>(
-      'blogs',
-      async (collection) => {
-        let cursor = collection.find(filter).sort(sort);
+    const blogs = await prisma.$queryRawUnsafe(query, ...params) as any[];
 
-        if (options.skip) {
-          cursor = cursor.skip(options.skip);
-        }
-        if (options.limit) {
-          cursor = cursor.limit(options.limit);
-        }
-
-        return await cursor.toArray();
-      }
-    );
-
-    return result.map(formatBlog);
+    return blogs.map((blog: any) => {
+      // Parse JSON fields
+      const tags = typeof blog.tags === 'string' ? JSON.parse(blog.tags || '[]') : (blog.tags || []);
+      const images = typeof blog.images === 'string' ? JSON.parse(blog.images || '[]') : (blog.images || []);
+      
+      return {
+        _id: blog.id.toString(),
+        id: blog.id.toString(),
+        title: blog.title,
+        slug: blog.slug,
+        excerpt: blog.excerpt,
+        content: blog.content,
+        featuredImage: blog.image || (images.length > 0 ? images[0] : ''),
+        image: blog.image,
+        images: images.length > 0 ? images : (blog.image ? [blog.image] : []),
+        tags: Array.isArray(tags) ? tags : [],
+        author: blog.author,
+        authorRole: blog.authorRole || '',
+        category: blog.category || 'Research',
+        readTime: blog.readTime || '5 min read',
+        published: blog.published,
+        featured: blog.featured,
+        views: blog.views,
+        publishedAt: blog.publishedAt ? new Date(blog.publishedAt).toISOString() : new Date(blog.createdAt).toISOString(),
+        createdAt: blog.createdAt ? new Date(blog.createdAt).toISOString() : new Date().toISOString(),
+        updatedAt: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : new Date().toISOString(),
+        source: 'geneveda' // Mark as Geneveda blog
+      };
+    });
   } catch (error: any) {
-    const isConnectionError = 
-      error.code === 'ETIMEDOUT' || 
-      error.message?.includes('timeout') ||
-      error.message?.includes('Connection terminated') ||
-      error.cause?.message?.includes('Connection terminated') ||
-      error.code === 'ECONNREFUSED' ||
-      error.code === 'ENOTFOUND';
-    
-    if (!isConnectionError) {
-      console.error('Failed to load blogs from database, returning empty list.', error);
+    console.error('Error fetching Geneveda blogs:', error);
+    return [];
+  }
+}
+
+export async function getBlogs(options: GetBlogsOptions = {}) {
+  try {
+    const where: any = {};
+
+    if (options.published !== undefined) {
+      where.published = options.published;
     }
+    if (options.featured !== undefined) {
+      where.featured = options.featured;
+    }
+    let categoryId: number | null = null;
+    
+    if (options.categoryId) {
+      categoryId = options.categoryId;
+      where.categoryId = options.categoryId;
+    } else if (options.category) {
+      // Find category by slug
+      const category = await prisma.category.findUnique({
+        where: { slug: options.category },
+      });
+      if (category) {
+        categoryId = category.id;
+        where.categoryId = category.id;
+      }
+    }
+    
+    if (options.subcategoryId) {
+      where.subcategoryId = options.subcategoryId;
+    } else if (options.subcategory) {
+      // Find subcategory by slug
+      // If we have a categoryId, use it to find the correct subcategory
+      // Otherwise, find first matching subcategory
+      const subcategoryWhere: any = { slug: options.subcategory };
+      if (categoryId) {
+        subcategoryWhere.categoryId = categoryId;
+      }
+      
+      const subcategory = await prisma.subcategory.findFirst({
+        where: subcategoryWhere,
+      });
+      if (subcategory) {
+        where.subcategoryId = subcategory.id;
+      }
+    }
+    if (options.search) {
+      where.OR = [
+        { title: { contains: options.search, mode: 'insensitive' } },
+        { excerpt: { contains: options.search, mode: 'insensitive' } },
+        { content: { contains: options.search, mode: 'insensitive' } },
+      ];
+    }
+
+    const orderBy: any[] = [];
+    if (options.featured !== undefined && options.featured) {
+      orderBy.push({ featured: 'desc' });
+    }
+    orderBy.push({ createdAt: 'desc' });
+
+    const blogs = await prisma.blog.findMany({
+      where,
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+      orderBy,
+      skip: options.skip,
+      take: options.limit,
+    });
+
+    return blogs.map(formatBlog);
+  } catch (error: any) {
+    console.error('Failed to load blogs from database, returning empty list.', error);
     return [];
   }
 }
 
 export async function getBlogBySlug(slug: string, incrementViews: boolean = false) {
   try {
-    const result = await query<BlogDocument>(
-      'blogs',
-      async (collection) => {
-        return await collection.findOne({ slug });
-      }
-    );
+    const blog = await prisma.blog.findUnique({
+      where: { slug },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
     
-    if (!result) return null;
-
-    const blog = result as BlogDocument;
+    if (!blog) return null;
 
     // Only increment views at runtime, not during static generation
     if (incrementViews) {
-      await query(
-        'blogs',
-        async (collection) => {
-          return await collection.updateOne(
-            { slug },
-            { $inc: { views: 1 } }
-          );
-        }
-      );
+      await prisma.blog.update({
+        where: { slug },
+        data: { views: { increment: 1 } },
+      });
+      
+      // Fetch updated blog with incremented views
+      const updatedBlog = await prisma.blog.findUnique({
+        where: { slug },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          subcategory: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+      
+      return updatedBlog ? formatBlog(updatedBlog) : formatBlog(blog);
     }
 
     return formatBlog(blog);
@@ -140,20 +279,34 @@ export async function getBlogBySlug(slug: string, incrementViews: boolean = fals
 
 export async function getBlogById(id: string) {
   try {
-    const result = await query<BlogDocument>(
-      'blogs',
-      async (collection) => {
-        if (ObjectId.isValid(id)) {
-          return await collection.findOne({ _id: new ObjectId(id) });
-        }
-        // Try as string if ObjectId is not valid
-        return await collection.findOne({ _id: id as any });
-      }
-    );
-    
-    if (!result) return null;
+    const blogId = parseInt(id, 10);
+    if (isNaN(blogId)) {
+      return null;
+    }
 
-    return formatBlog(result as BlogDocument);
+    const blog = await prisma.blog.findUnique({
+      where: { id: blogId },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+    
+    if (!blog) return null;
+
+    return formatBlog(blog);
   } catch (error) {
     console.error('Failed to load blog by id from database.', error);
     return null;
@@ -166,39 +319,48 @@ export async function createBlog(data: {
   excerpt: string;
   content: string;
   featuredImage: string;
-  category?: string;
   tags?: string[];
   author?: string;
   published?: boolean;
   featured?: boolean;
+  categoryId?: number;
+  subcategoryId?: number;
 }) {
   try {
-    const now = new Date();
-    const blogData: BlogDocument = {
-      title: data.title,
-      slug: data.slug,
-      excerpt: data.excerpt,
-      content: data.content,
-      featuredImage: data.featuredImage,
-      category: data.category || 'General',
-      tags: data.tags || [],
-      author: data.author || 'Admin',
-      published: data.published || false,
-      featured: data.featured || false,
-      views: 0,
-      createdAt: now,
-      updatedAt: now,
-    };
+    const blog = await prisma.blog.create({
+      data: {
+        title: data.title,
+        slug: data.slug,
+        excerpt: data.excerpt,
+        content: data.content,
+        featuredImage: data.featuredImage,
+        tags: data.tags || [],
+        author: data.author || 'Admin',
+        published: data.published || false,
+        featured: data.featured || false,
+        views: 0,
+        categoryId: data.categoryId || null,
+        subcategoryId: data.subcategoryId || null,
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
 
-    const result = await query<BlogDocument>(
-      'blogs',
-      async (collection) => {
-        const insertResult = await collection.insertOne(blogData);
-        return await collection.findOne({ _id: insertResult.insertedId });
-      }
-    );
-
-    return formatBlog(result as BlogDocument);
+    return formatBlog(blog);
   } catch (error) {
     console.error('Failed to create blog in database.', error);
     throw new Error('Database is currently unavailable. Please try again later.');
@@ -211,55 +373,64 @@ export async function updateBlog(id: string, data: {
   excerpt?: string;
   content?: string;
   featuredImage?: string;
-  category?: string;
   tags?: string[];
   author?: string;
   published?: boolean;
   featured?: boolean;
+  categoryId?: number;
+  subcategoryId?: number;
 }) {
   try {
-    const updates: any = {
-      updatedAt: new Date(),
-    };
+    const blogId = parseInt(id, 10);
+    if (isNaN(blogId)) {
+      throw new Error('Invalid blog ID');
+    }
+
+    const updates: any = {};
 
     if (data.title !== undefined) updates.title = data.title;
     if (data.slug !== undefined) updates.slug = data.slug;
     if (data.excerpt !== undefined) updates.excerpt = data.excerpt;
     if (data.content !== undefined) updates.content = data.content;
     if (data.featuredImage !== undefined) updates.featuredImage = data.featuredImage;
-    if (data.category !== undefined) updates.category = data.category;
     if (data.tags !== undefined) updates.tags = data.tags;
     if (data.author !== undefined) updates.author = data.author;
     if (data.published !== undefined) updates.published = data.published;
     if (data.featured !== undefined) updates.featured = data.featured;
+    if (data.categoryId !== undefined) updates.categoryId = data.categoryId;
+    if (data.subcategoryId !== undefined) updates.subcategoryId = data.subcategoryId;
 
-    if (Object.keys(updates).length === 1) {
-      // Only updatedAt, just return the existing blog
+    if (Object.keys(updates).length === 0) {
+      // No updates, just return the existing blog
       return await getBlogById(id);
     }
 
-    const result = await query<BlogDocument>(
-      'blogs',
-      async (collection) => {
-        const filter = ObjectId.isValid(id) 
-          ? { _id: new ObjectId(id) }
-          : { _id: id as any };
-        
-        const updateResult = await collection.findOneAndUpdate(
-          filter,
-          { $set: updates },
-          { returnDocument: 'after' }
-        );
-        return updateResult;
-      }
-    );
+    const blog = await prisma.blog.update({
+      where: { id: blogId },
+      data: updates,
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
     
-    if (!result) {
+    return formatBlog(blog);
+  } catch (error: any) {
+    if (error.code === 'P2025') {
       throw new Error('Blog not found');
     }
-
-    return formatBlog(result as BlogDocument);
-  } catch (error) {
     console.error('Failed to update blog in database.', error);
     throw new Error('Database is currently unavailable. Please try again later.');
   }
@@ -267,18 +438,20 @@ export async function updateBlog(id: string, data: {
 
 export async function deleteBlog(id: string) {
   try {
-    const result = await query(
-      'blogs',
-      async (collection) => {
-        const filter = ObjectId.isValid(id) 
-          ? { _id: new ObjectId(id) }
-          : { _id: id as any };
-        return await collection.deleteOne(filter);
-      }
-    );
+    const blogId = parseInt(id, 10);
+    if (isNaN(blogId)) {
+      return false;
+    }
+
+    await prisma.blog.delete({
+      where: { id: blogId },
+    });
     
-    return result.deletedCount > 0;
-  } catch (error) {
+    return true;
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      return false;
+    }
     console.error('Failed to delete blog in database.', error);
     throw new Error('Database is currently unavailable. Please try again later.');
   }

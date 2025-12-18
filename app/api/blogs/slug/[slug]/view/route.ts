@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 export async function POST(
   request: NextRequest,
@@ -7,15 +7,10 @@ export async function POST(
 ) {
   try {
     // Increment views
-    await query(
-      'blogs',
-      async (collection) => {
-        return await collection.updateOne(
-          { slug: params.slug },
-          { $inc: { views: 1 } }
-        );
-      }
-    );
+    await prisma.blog.update({
+      where: { slug: params.slug },
+      data: { views: { increment: 1 } },
+    });
     
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -26,4 +21,3 @@ export async function POST(
     );
   }
 }
-

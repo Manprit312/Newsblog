@@ -106,6 +106,12 @@ export default async function AdminDashboard() {
           >
             Manage all blogs
           </Link>
+          <Link
+            href="/admin/categories"
+            className="inline-flex items-center gap-2 rounded-full bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-700"
+          >
+            Manage Categories
+          </Link>
         </div>
       </section>
     </div>

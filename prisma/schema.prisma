@@ -1,0 +1,83 @@
+// Prisma Schema for NewsBlogs
+// Database: PostgreSQL (same as geneveda-biosciences)
+// Note: Admin model is shared from geneveda-biosciences (admins table)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Category model for news blog categories
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String        @unique @db.VarChar(255)
+  slug          String        @unique @db.VarChar(255)
+  description   String?       @db.Text
+  orderIndex    Int           @default(0) @map("order_index")
+  active        Boolean       @default(true)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamp
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamp
+  
+  subcategories Subcategory[]
+  blogs         Blog[]
+
+  @@index([slug])
+  @@index([active])
+  @@index([orderIndex])
+  @@map("categories")
+}
+
+// Subcategory model for news blog subcategories
+model Subcategory {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(255)
+  slug          String    @db.VarChar(255)
+  description   String?   @db.Text
+  orderIndex    Int       @default(0) @map("order_index")
+  active        Boolean   @default(true)
+  categoryId    Int       @map("category_id")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamp
+  
+  category      Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  blogs         Blog[]
+
+  @@unique([categoryId, slug])
+  @@index([categoryId])
+  @@index([slug])
+  @@index([active])
+  @@index([orderIndex])
+  @@map("subcategories")
+}
+
+// Blog model for news blogs
+model Blog {
+  id            Int          @id @default(autoincrement())
+  title         String       @db.VarChar(500)
+  slug          String       @unique @db.VarChar(500)
+  excerpt       String       @db.Text
+  content       String       @db.Text
+  featuredImage String?      @map("featured_image") @db.VarChar(1000)
+  tags          String[]     @default([])
+  author        String       @default("Admin") @db.VarChar(255)
+  published     Boolean      @default(false)
+  featured      Boolean      @default(false)
+  views         Int          @default(0)
+  categoryId    Int?         @map("category_id")
+  subcategoryId Int?         @map("subcategory_id")
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamp
+  updatedAt     DateTime     @updatedAt @map("updated_at") @db.Timestamp
+  
+  category      Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  @@index([categoryId])
+  @@index([subcategoryId])
+  @@index([published])
+  @@index([slug])
+  @@map("news_blogs")
+}
