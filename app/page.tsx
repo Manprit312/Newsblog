@@ -49,11 +49,11 @@ export default async function Home() {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         {/* Trending Section */}
         {trendingBlogs.length > 0 && (
-          <div className="mb-6 flex flex-col items-stretch gap-4 border-b border-gray-200 bg-white py-3 md:flex-row md:items-center">
+          <div className="mb-6 flex flex-col items-stretch gap-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-3 md:flex-row md:items-center">
             <div className="flex items-center gap-2 bg-yellow-600 text-white px-4 py-2">
               <TrendingUp className="w-4 h-4" />
               <span className="font-bold text-sm uppercase">TRENDING</span>
@@ -62,21 +62,21 @@ export default async function Home() {
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-4 h-4 text-yellow-600 flex-shrink-0" />
                 <Link href={`/blog/${trendingBlogs[0].slug}`} className="group flex items-center gap-4">
-                  <h3 className="text-base font-bold text-gray-900 group-hover:text-yellow-600 transition-colors line-clamp-1">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 group-hover:text-yellow-600 transition-colors line-clamp-1">
                     {trendingBlogs[0].title}
                             </h3>
-                  <span className="text-sm text-gray-500 whitespace-nowrap">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                     {format(new Date(trendingBlogs[0].createdAt), 'MMM dd, yyyy')}
                   </span>
                       </Link>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+                <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </button>
-              <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                <ChevronRight className="w-5 h-5 text-gray-600" />
+              <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+                <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </button>
             </div>
           </div>
@@ -88,14 +88,14 @@ export default async function Home() {
           <div className="lg:col-span-2 space-y-8">
             {/* Featured News Section */}
             {latestBlogs.length > 0 && (
-              <section className="bg-white">
+              <section className="bg-white dark:bg-gray-800">
                 <div className="mb-6 pb-3 border-b-2 border-yellow-600">
                   <h2 className="text-2xl font-bold text-yellow-600 uppercase">FEATURED NEWS</h2>
                 </div>
                 <div className="space-y-6">
                   {latestBlogs.slice(0, 4).map((blog: Blog) => (
                     <Link key={blog._id} href={`/blog/${blog.slug}`} className="block group">
-                      <article className="flex gap-4 pb-6 border-b border-gray-200 last:border-0">
+                      <article className="flex gap-4 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0">
                         <div className="relative h-32 w-full flex-shrink-0 overflow-hidden sm:w-32">
                           <Image
                             src={blog.featuredImage}
@@ -110,10 +110,10 @@ export default async function Home() {
                               {blog.category}
                             </span>
                           </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors line-clamp-2">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-yellow-600 transition-colors line-clamp-2">
                             {blog.title}
                           </h3>
-                          <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
+                          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-2">
                             <span>by News Line</span>
                             <span className="uppercase">{format(new Date(blog.createdAt), 'MMM dd, yyyy').toUpperCase()}</span>
                             <div className="flex items-center gap-1">
@@ -125,7 +125,7 @@ export default async function Home() {
                               <span>{blog.views}</span>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-600 line-clamp-2">{blog.excerpt}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{blog.excerpt}</p>
                         </div>
                       </article>
                     </Link>
@@ -138,7 +138,7 @@ export default async function Home() {
             {Object.entries(categoryBlogs).map(([category, blogs]) => {
               if (blogs.length === 0) return null;
               return (
-                <section key={category} className="bg-white">
+                <section key={category} className="bg-white dark:bg-gray-800">
                   <div className="mb-6 pb-3 border-b-2 border-yellow-600">
                     <h2 className="text-2xl font-bold text-yellow-600 uppercase">{category} NEWS</h2>
                   </div>
@@ -155,16 +155,16 @@ export default async function Home() {
           {/* Right Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
             {/* Sidebar with Tabs */}
-            <div className="bg-white border border-gray-200">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
               {/* Tabs */}
-              <div className="flex border-b border-gray-200">
-                <button className="flex-1 px-4 py-3 text-sm font-bold text-gray-900 border-b-2 border-yellow-600">
+              <div className="flex border-b border-gray-200 dark:border-gray-700">
+                <button className="flex-1 px-4 py-3 text-sm font-bold text-gray-900 dark:text-gray-100 border-b-2 border-yellow-600">
                   Trending
                 </button>
-                <button className="flex-1 px-4 py-3 text-sm font-bold text-gray-500 hover:text-gray-900">
+                <button className="flex-1 px-4 py-3 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
                   Comments
                 </button>
-                <button className="flex-1 px-4 py-3 text-sm font-bold text-gray-500 hover:text-gray-900">
+                <button className="flex-1 px-4 py-3 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
                   Latest
                 </button>
                 </div>
@@ -189,14 +189,14 @@ export default async function Home() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                           <span className="text-yellow-600 font-bold text-lg">{index + 1}</span>
-                          <h3 className="text-sm font-bold text-gray-900 group-hover:text-yellow-600 transition-colors line-clamp-2">
+                          <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-yellow-600 transition-colors line-clamp-2">
                             {blog.title}
                           </h3>
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           {format(new Date(blog.createdAt), 'MMM dd, yyyy')}
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">0 SHARES</div>
+                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">0 SHARES</div>
                       </div>
                     </div>
                   </Link>
@@ -206,7 +206,7 @@ export default async function Home() {
 
             {/* Popular Stories with Numbers */}
             {trendingBlogs.length > 0 && (
-              <div className="bg-white border border-gray-200 p-6">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6">
                 <div className="mb-6 pb-3 border-b-2 border-yellow-600">
                   <h2 className="text-xl font-bold text-yellow-600 uppercase">POPULAR STORIES</h2>
                 </div>
@@ -218,14 +218,14 @@ export default async function Home() {
                       className="block group"
                     >
                       <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                           <span className="text-xl font-bold text-yellow-600">{index + 1}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-bold text-gray-900 group-hover:text-yellow-600 transition-colors line-clamp-2 mb-1">
+                          <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-yellow-600 transition-colors line-clamp-2 mb-1">
                             {blog.title}
                           </h3>
-                          <div className="text-xs text-gray-400">0 SHARES</div>
+                          <div className="text-xs text-gray-400 dark:text-gray-500">0 SHARES</div>
                         </div>
                       </div>
                     </Link>
@@ -238,8 +238,8 @@ export default async function Home() {
 
         {/* Empty State */}
         {allBlogs.length === 0 && (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <p className="text-gray-500 text-xl mb-4">No blogs found.</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
+            <p className="text-gray-500 dark:text-gray-400 text-xl mb-4">No blogs found.</p>
             <Link
               href="/admin/blogs/new"
               className="inline-block bg-secondary-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors"

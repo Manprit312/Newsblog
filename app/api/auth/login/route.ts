@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       user: result.user,
+      admin: result.user, // Also include as admin for compatibility
     });
   } catch (error) {
     console.error('Login error:', error);

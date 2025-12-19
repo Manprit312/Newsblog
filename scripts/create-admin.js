@@ -15,7 +15,7 @@ async function createAdmin() {
     const role = process.argv[6] || 'admin'; // admin or superadmin
 
     console.log(`Creating admin user with email: ${email}`);
-
+    
     // First, check if the admins table exists
     try {
       await prisma.$queryRaw`SELECT 1 FROM admins LIMIT 1`;
@@ -32,12 +32,12 @@ async function createAdmin() {
       }
       throw error;
     }
-
+    
     // Check if user already exists (using raw SQL since Admin model is not in this schema)
     const existingUser = await prisma.$queryRaw`
       SELECT id, email, username FROM admins WHERE email = ${email} OR username = ${username}
     `;
-
+    
     if (existingUser && existingUser.length > 0) {
       console.log(`⚠ User with email ${email} or username ${username} already exists!`);
       console.log('To update the password, delete the user first or use a different email/username.');
@@ -46,7 +46,7 @@ async function createAdmin() {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     // Validate role
     if (role !== 'admin' && role !== 'superadmin') {
       console.error('❌ Invalid role. Role must be "admin" or "superadmin"');
@@ -72,9 +72,9 @@ async function createAdmin() {
           `INSERT INTO admins (username, email, password_hash, name, role, active, created_at, updated_at)
            VALUES ($1, $2, $3, $4, CAST($5 AS \"AdminRole\"), true, NOW(), NOW())`,
           username,
-          email,
+      email,
           hashedPassword,
-          name,
+      name,
           role
         );
       } catch (error2) {
@@ -95,7 +95,7 @@ async function createAdmin() {
     console.log('\n⚠️  Please save these credentials securely!');
     console.log('You can now login at /admin/login');
     console.log('\nNote: This admin is shared with geneveda-biosciences project.');
-
+    
     process.exit(0);
   } catch (error) {
     console.error('❌ Failed to create admin user:', error.message);

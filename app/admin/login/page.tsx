@@ -1,121 +1,221 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Force light theme and ensure visibility
+    if (typeof window !== "undefined") {
+      const root = document.documentElement;
+      const body = document.body;
+      
+      // Remove dark class
+      root.classList.remove("dark");
+      
+      // Set explicit light theme
+      root.style.colorScheme = "light";
+      root.setAttribute("data-theme", "light");
+      
+      // Ensure background colors are set
+      root.style.backgroundColor = "#ffffff";
+      body.style.backgroundColor = "#f0fdf4";
+      body.style.color = "#111827";
+      
+      // Force remove any dark mode styles
+      root.style.setProperty("--background", "#ffffff");
+      root.style.setProperty("--foreground", "#171717");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.error || 'Login failed');
+      if (response.ok && data.success) {
+        // Small delay to ensure cookie is set
+        setTimeout(() => {
+          router.push("/admin/dashboard");
+          router.refresh();
+        }, 100);
+      } else {
+        setError(data.message || data.error || "Login failed");
         setLoading(false);
-        return;
       }
-
-      // Redirect to admin dashboard
-      router.push('/admin');
-      router.refresh();
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+    } catch (err: any) {
+      setError("An error occurred. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 dark:bg-gray-950 sm:px-6 lg:px-8">
-      <div className="mx-auto w-full max-w-md space-y-8 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="text-center">
-          <h2 className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-gray-50">
-            Admin Login
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-            Sign in to access the admin panel
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+    <div 
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #ecfdf5 0%, #ffffff 50%, #eff6ff 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "1rem",
+      }}
+    >
+      <div style={{ width: "100%", maxWidth: "28rem" }}>
+        <div 
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "1rem",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            padding: "2rem",
+          }}
+        >
+          <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+            <Link href="/" style={{ display: "inline-block", marginBottom: "1rem" }}>
+              <img 
+                src="/images/logo.jpeg" 
+                alt="NewsBlogs" 
+                style={{ width: "4rem", height: "4rem", objectFit: "contain", margin: "0 auto" }}
+              />
+            </Link>
+            <h1 style={{ fontSize: "1.875rem", fontWeight: "bold", color: "#111827", marginBottom: "0.5rem" }}>
+              Admin Login
+            </h1>
+            <p style={{ color: "#4b5563" }}>
+              Sign in to manage your content
+            </p>
+          </div>
+
           {error && (
-            <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-md text-sm">
+            <div 
+              style={{
+                marginBottom: "1rem",
+                padding: "0.75rem",
+                backgroundColor: "#fee2e2",
+                border: "1px solid #f87171",
+                color: "#991b1b",
+                borderRadius: "0.5rem",
+              }}
+            >
               {error}
             </div>
           )}
-          <div className="rounded-md shadow-sm -space-y-px">
+
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
+              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "0.5rem" }}>
+                Email
               </label>
               <input
-                id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-secondary-blue focus:border-secondary-blue focus:z-10 sm:text-sm dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
-                placeholder="Email address"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                style={{
+                  width: "100%",
+                  padding: "0.625rem 1rem",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "0.5rem",
+                  color: "#111827",
+                  fontSize: "1rem",
+                }}
+                placeholder="admin@example.com"
               />
             </div>
+
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "0.5rem" }}>
                 Password
               </label>
               <input
-                id="password"
-                name="password"
                 type="password"
-                autoComplete="current-password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-secondary-blue focus:border-secondary-blue focus:z-10 sm:text-sm dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
-                placeholder="Password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                style={{
+                  width: "100%",
+                  padding: "0.625rem 1rem",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "0.5rem",
+                  color: "#111827",
+                  fontSize: "1rem",
+                }}
+                placeholder="••••••••"
               />
             </div>
-          </div>
 
-          <div>
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-secondary-blue hover:bg-secondary-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              style={{
+                width: "100%",
+                backgroundColor: loading ? "#34d399" : "#059669",
+                color: "#ffffff",
+                padding: "0.75rem 1.5rem",
+                borderRadius: "0.5rem",
+                fontWeight: "600",
+                fontSize: "1rem",
+                border: "none",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.5 : 1,
+              }}
+              onMouseOver={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor = "#047857";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor = "#059669";
+                }
+              }}
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? "Signing in..." : "Sign In"}
             </button>
-          </div>
+          </form>
 
-          <div className="text-center">
+          <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
             <Link
               href="/"
-              className="text-sm text-secondary-blue hover:text-secondary-blue-dark"
+              style={{
+                fontSize: "0.875rem",
+                color: "#059669",
+                textDecoration: "none",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecoration = "underline";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecoration = "none";
+              }}
             >
               ← Back to website
             </Link>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
 }
-
-

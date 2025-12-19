@@ -58,9 +58,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, blog }, { status: 201 });
   } catch (error: any) {
     console.error('POST /api/blogs error:', error);
+    // Return appropriate status code based on error type
+    const statusCode = error.message?.includes('already exists') ? 400 : 
+                      error.message?.includes('Invalid') ? 400 : 500;
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to create blog' },
-      { status: 500 }
+      { status: statusCode }
     );
   }
 }

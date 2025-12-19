@@ -11,6 +11,7 @@ type Blog = {
   slug: string;
   excerpt: string;
   featuredImage: string;
+  photos?: string[];
   category: string;
   published: boolean;
   featured: boolean;
@@ -76,7 +77,7 @@ export default async function BlogDetailPage({
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-white dark:bg-gray-900 min-h-screen">
       <ViewIncrementer slug={params.slug} />
       <article className="max-w-4xl mx-auto">
         {/* Header */}
@@ -91,10 +92,10 @@ export default async function BlogDetailPage({
               </span>
             )}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-secondary-blue mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-secondary-blue dark:text-blue-400 mb-4">
             {blog.title}
           </h1>
-          <div className="flex items-center gap-4 text-gray-600">
+          <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
             <span>By {blog.author}</span>
             <span>•</span>
             <span>{format(new Date(blog.createdAt), 'MMMM dd, yyyy')}</span>
@@ -116,9 +117,32 @@ export default async function BlogDetailPage({
 
         {/* Content */}
         <div
-          className="prose prose-lg max-w-none mb-12 prose-headings:text-secondary-blue prose-a:text-secondary-blue prose-strong:text-secondary-blue prose-img:rounded-lg prose-img:shadow-lg"
+          className="prose prose-lg max-w-none mb-12 prose-headings:text-secondary-blue dark:prose-headings:text-blue-400 prose-a:text-secondary-blue dark:prose-a:text-blue-400 prose-strong:text-secondary-blue dark:prose-strong:text-blue-400 prose-img:rounded-lg prose-img:shadow-lg prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-li:text-gray-700 dark:prose-li:text-gray-300"
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />
+
+        {/* Additional Photos Gallery */}
+        {blog.photos && blog.photos.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-1 w-16 bg-primary-yellow"></div>
+              <h2 className="text-2xl font-bold text-secondary-blue dark:text-blue-400">Photo Gallery</h2>
+              <div className="h-1 flex-1 bg-primary-yellow"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {blog.photos.map((photo: string, index: number) => (
+                <div key={index} className="relative h-64 w-full rounded-lg overflow-hidden shadow-lg">
+                  <Image
+                    src={photo}
+                    alt={`${blog.title} - Photo ${index + 1}`}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tags */}
         {blog.tags && blog.tags.length > 0 && (
@@ -140,7 +164,7 @@ export default async function BlogDetailPage({
         <div className="mt-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-1 w-16 bg-primary-yellow"></div>
-            <h2 className="text-3xl font-bold text-secondary-blue">Related News</h2>
+            <h2 className="text-3xl font-bold text-secondary-blue dark:text-blue-400">Related News</h2>
             <div className="h-1 flex-1 bg-primary-yellow"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

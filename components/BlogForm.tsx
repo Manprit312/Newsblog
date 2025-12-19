@@ -4,9 +4,29 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import ImageUpload from './ImageUpload';
+import MultipleImageUpload from './MultipleImageUpload';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
+
+// Level 3 Editorial Categories (Blog Categories)
+const EDITORIAL_CATEGORIES = [
+  'Trending News',
+  'Breaking News',
+  'Badi Khabre',
+  'Rajya Khabre',
+  'Desh Khabre',
+  'Election Special',
+  'Exclusive Report',
+  'Ground Report',
+  'Fact Check',
+  'Explainers',
+  'Analysis',
+  'Opinion / Editorial',
+  'Special Stories',
+  'Viral News',
+  'Good News',
+];
 
 interface BlogFormProps {
   initialData?: {
@@ -16,6 +36,7 @@ interface BlogFormProps {
     excerpt: string;
     content: string;
     featuredImage: string;
+    photos?: string[];
     category?: string | null;
     subcategory?: string | null;
     categoryId?: number | null;
@@ -49,9 +70,11 @@ export default function BlogForm({ initialData }: BlogFormProps) {
     excerpt: initialData?.excerpt || '',
     content: initialData?.content || '',
     featuredImage: initialData?.featuredImage || '',
+    photos: initialData?.photos || [],
     categoryId: initialData?.categoryId || null,
     subcategoryId: initialData?.subcategoryId || null,
     tags: initialData?.tags?.join(', ') || '',
+    editorialCategory: '', // Level 3 - Editorial category
     author: initialData?.author || 'Admin',
     published: initialData?.published || false,
     featured: initialData?.featured || false,
@@ -98,10 +121,16 @@ export default function BlogForm({ initialData }: BlogFormProps) {
         .split(',')
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
+      
+      // Add editorial category to tags if selected
+      if (formData.editorialCategory) {
+        tagsArray.push(formData.editorialCategory);
+      }
 
       const payload = {
         ...formData,
         tags: tagsArray,
+        photos: formData.photos || [],
         // Clear subcategory if category is changed
         subcategoryId: formData.categoryId ? formData.subcategoryId : null,
       };
@@ -125,7 +154,10 @@ export default function BlogForm({ initialData }: BlogFormProps) {
         router.push('/admin/blogs');
         router.refresh();
       } else {
-        alert('Error: ' + data.error);
+        // Show detailed error message
+        const errorMsg = data.error || 'Failed to save blog. Please try again.';
+        alert('Error: ' + errorMsg);
+        console.error('Blog save error:', data);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -183,6 +215,13 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       <ImageUpload
         value={formData.featuredImage}
         onChange={(url) => setFormData({ ...formData, featuredImage: url })}
+      />
+
+      <MultipleImageUpload
+        value={formData.photos || []}
+        onChange={(urls) => setFormData({ ...formData, photos: urls })}
+        maxImages={10}
+        label="Blog Photos"
       />
 
       <div>
@@ -266,6 +305,27 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-secondary-blue mb-2">
+            Editorial Category (Level 3)
+          </label>
+          <select
+            value={formData.editorialCategory}
+            onChange={(e) => setFormData({ ...formData, editorialCategory: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+          >
+            <option value="">Select Editorial Category (Optional)</option>
+            {EDITORIAL_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Content-focused category for editorial organization
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-secondary-blue mb-2">
             Author
           </label>
           <input
@@ -275,22 +335,22 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
           />
         </div>
+      </div>
 
-        <div>
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
-            Tags (comma-separated)
-          </label>
-          <input
-            type="text"
-            value={formData.tags}
-            onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-            placeholder="e.g., breaking, trending, featured"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Additional tags for filtering and search
-          </p>
-        </div>
+      <div>
+        <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          Tags (comma-separated)
+        </label>
+        <input
+          type="text"
+          value={formData.tags}
+          onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+          placeholder="e.g., breaking, trending, featured"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Additional tags for filtering and search
+        </p>
       </div>
 
       <div className="flex gap-4">

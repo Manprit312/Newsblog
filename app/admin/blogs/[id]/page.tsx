@@ -136,6 +136,25 @@ export default function BlogDetailPage({ params }: { params: { id: string } }) {
             dangerouslySetInnerHTML={{ __html: blog.content }}
           />
 
+          {/* Additional Photos Gallery */}
+          {blog.photos && blog.photos.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-xl font-bold text-secondary-blue mb-4">Additional Photos</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {blog.photos.map((photo: string, index: number) => (
+                  <div key={index} className="relative h-48 w-full rounded-lg overflow-hidden border-2 border-gray-300">
+                    <Image
+                      src={photo}
+                      alt={`${blog.title} - Photo ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {blog.tags && blog.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {blog.tags.map((tag: string, index: number) => (

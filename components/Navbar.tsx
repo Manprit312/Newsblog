@@ -345,7 +345,7 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto">
             <div className="container mx-auto px-4 py-4 space-y-1">
               {/* Mobile Search */}
               <form onSubmit={handleSearch} className="mb-4">

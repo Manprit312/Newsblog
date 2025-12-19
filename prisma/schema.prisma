@@ -7,8 +7,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 // Category model for news blog categories
@@ -62,6 +64,7 @@ model Blog {
   excerpt       String       @db.Text
   content       String       @db.Text
   featuredImage String?      @map("featured_image") @db.VarChar(1000)
+  photos        String[]     @default([]) // Array of photo URLs
   tags          String[]     @default([])
   author        String       @default("Admin") @db.VarChar(255)
   published     Boolean      @default(false)
@@ -80,4 +83,22 @@ model Blog {
   @@index([published])
   @@index([slug])
   @@map("news_blogs")
+}
+
+// Admin model for authentication (shared with geneveda-biosciences)
+model Admin {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  name         String?   @db.VarChar(255)
+  role         String    @default("admin") @db.VarChar(50)
+  active       Boolean   @default(true)
+  lastLogin    DateTime? @map("last_login") @db.Timestamp
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamp
+
+  @@index([email])
+  @@index([active])
+  @@index([role])
+  @@map("admins")
 }

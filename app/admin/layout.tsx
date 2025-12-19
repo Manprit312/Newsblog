@@ -1,134 +1,181 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import AuthGuard from '@/components/AuthGuard';
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  FileText,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  FolderTree,
+} from "lucide-react";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const pathname = usePathname();
+  const [admin, setAdmin] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const isActive = (path: string) => pathname === path;
+  // Skip auth check for login page
+  const isLoginPage = pathname === "/admin/login";
 
-  // Do not wrap the login route in AuthGuard to avoid redirect loops
-  const isLoginPage = pathname === '/admin/login';
+  useEffect(() => {
+    if (!isLoginPage) {
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoginPage]);
 
-  const content = (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Top bar */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur dark:bg-slate-900/80 dark:border-slate-800">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link
-            href="/admin"
-            className="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-50"
-          >
-            <span className="mr-1 rounded bg-secondary-blue px-2 py-1 text-xs font-bold uppercase tracking-widest text-white">
-              Admin
-            </span>
-            <span className="font-display">NewsBlogs Console</span>
-          </Link>
-          <Link
-            href="/"
-            className="text-sm font-medium text-slate-600 hover:text-secondary-blue dark:text-slate-300 dark:hover:text-primary-yellow"
-          >
-            ← Back to site
-          </Link>
-        </div>
-      </header>
+  const checkAuth = async () => {
+    try {
+      const response = await fetch("/api/auth/me");
+      const data = await response.json();
 
-      <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6">
-        {/* Sidebar nav */}
-        <nav className="sticky top-20 hidden w-56 flex-shrink-0 flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex">
-          <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
-            Navigation
-          </p>
-          <Link
-            href="/admin"
-            className={`rounded-xl px-3 py-2 font-medium transition-colors ${
-              isActive('/admin')
-                ? 'bg-secondary-blue text-white shadow-sm'
-                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
-            }`}
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="/admin/blogs"
-            className={`rounded-xl px-3 py-2 font-medium transition-colors ${
-              isActive('/admin/blogs')
-                ? 'bg-secondary-blue text-white shadow-sm'
-                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
-            }`}
-          >
-            Manage blogs
-          </Link>
-          <Link
-            href="/admin/blogs/new"
-            className={`rounded-xl px-3 py-2 font-medium transition-colors ${
-              isActive('/admin/blogs/new')
-                ? 'bg-secondary-blue text-white shadow-sm'
-                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
-            }`}
-          >
-            New blog
-          </Link>
-        </nav>
+      if (response.ok && (data.user || data.admin || data.success)) {
+        setAdmin(data.user || data.admin || data);
+      } else {
+        router.push("/admin/login");
+      }
+    } catch (error) {
+      console.error("Auth check error:", error);
+      router.push("/admin/login");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        {/* Main content */}
-        <main className="flex-1">
-          <div className="mb-4 flex gap-2 md:hidden">
-            <Link
-              href="/admin"
-              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                isActive('/admin')
-                  ? 'bg-secondary-blue text-white'
-                  : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/blogs"
-              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                isActive('/admin/blogs')
-                  ? 'bg-secondary-blue text-white'
-                  : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              Blogs
-            </Link>
-            <Link
-              href="/admin/blogs/new"
-              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                isActive('/admin/blogs/new')
-                  ? 'bg-secondary-blue text-white'
-                  : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              New
-            </Link>
-          </div>
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/admin/login");
+    router.refresh();
+  };
 
-          <div className="space-y-6">
-            {children}
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-
+  // If login page, just render children without auth check
   if (isLoginPage) {
-    return content;
+    return <>{children}</>;
   }
 
-  return <AuthGuard>{content}</AuthGuard>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!admin) {
+    return null;
+  }
+
+  const navItems = [
+    { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/admin/blogs", icon: FileText, label: "Blogs" },
+    { href: "/admin/categories", icon: FolderTree, label: "Categories" },
+    { href: "/admin/settings", icon: Settings, label: "Settings" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-transform ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <Link href="/admin/dashboard" className="flex items-center gap-2">
+              <img src="/images/logo.jpeg" alt="Logo" className="w-8 h-8 object-contain" />
+              <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                Admin Panel
+              </span>
+            </Link>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <nav className="flex-1 p-4 space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              return (
+            <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {admin.name || admin.email || "Admin"}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{admin.email || ""}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="font-medium">Logout</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="lg:pl-64">
+        {/* Top bar */}
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between px-4 py-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="p-6">{children}</main>
+      </div>
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+    </div>
+  );
 }
-
-
-
-
-
-

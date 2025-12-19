@@ -12,7 +12,11 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({ 
+      success: true,
+      user,
+      admin: user, // Also include as admin for compatibility
+    });
   } catch (error) {
     console.error('Auth check error:', error);
     return NextResponse.json(

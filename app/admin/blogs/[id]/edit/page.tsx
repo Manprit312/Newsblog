@@ -20,7 +20,10 @@ export default async function EditBlogPage({
     excerpt: string;
     content: string;
     featuredImage: string;
-    category: string;
+    photos?: string[];
+    category?: string | null;
+    categoryId?: number | null;
+    subcategoryId?: number | null;
     tags: string[];
     author: string;
     published: boolean;
@@ -32,7 +35,10 @@ export default async function EditBlogPage({
     excerpt: blog.excerpt,
     content: blog.content,
     featuredImage: blog.featuredImage,
-    category: blog.category || '',
+    photos: (blog as any).photos || [],
+    category: blog.category || null,
+    categoryId: (blog as any).categoryId || null,
+    subcategoryId: (blog as any).subcategoryId || null,
     tags: blog.tags || [],
     author: blog.author || 'Admin',
     published: blog.published,

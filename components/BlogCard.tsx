@@ -20,7 +20,7 @@ interface BlogCardProps {
 export default function BlogCard({ blog }: BlogCardProps) {
   return (
     <Link href={`/blog/${blog.slug}`}>
-      <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100">
+      <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 dark:border-gray-700">
         <div className="relative h-48 w-full overflow-hidden">
           <Image
             src={blog.featuredImage}
@@ -43,10 +43,10 @@ export default function BlogCard({ blog }: BlogCardProps) {
           )}
         </div>
         <div className="p-5">
-          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors line-clamp-2 leading-snug">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-yellow-600 transition-colors line-clamp-2 leading-snug">
             {blog.title}
           </h3>
-          <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-3">
             <span>by News Line</span>
             <span className="uppercase">{format(new Date(blog.createdAt), 'MMM dd, yyyy').toUpperCase()}</span>
             <div className="flex items-center gap-1">
@@ -58,7 +58,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
               <span>{blog.views}</span>
             </div>
           </div>
-          <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
             {blog.excerpt}
           </p>
         </div>

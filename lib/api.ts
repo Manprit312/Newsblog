@@ -20,6 +20,7 @@ type Blog = {
   excerpt: string;
   content: string;
   featuredImage: string | null;
+  photos: string[];
   tags: string[];
   author: string;
   published: boolean;
@@ -39,6 +40,7 @@ const formatBlog = (blog: Blog) => {
     _id: blog.id.toString(),
     id: blog.id.toString(),
     featuredImage: blog.featuredImage || '',
+    photos: blog.photos || [],
     category: blog.category?.name || null,
     subcategory: blog.subcategory?.name || null,
     createdAt: blog.createdAt.toISOString(),
@@ -319,6 +321,7 @@ export async function createBlog(data: {
   excerpt: string;
   content: string;
   featuredImage: string;
+  photos?: string[];
   tags?: string[];
   author?: string;
   published?: boolean;
@@ -333,8 +336,9 @@ export async function createBlog(data: {
         slug: data.slug,
         excerpt: data.excerpt,
         content: data.content,
-        featuredImage: data.featuredImage,
-        tags: data.tags || [],
+        featuredImage: data.featuredImage || null,
+        photos: Array.isArray(data.photos) ? data.photos : [],
+        tags: Array.isArray(data.tags) ? data.tags : [],
         author: data.author || 'Admin',
         published: data.published || false,
         featured: data.featured || false,
@@ -361,9 +365,19 @@ export async function createBlog(data: {
     });
 
     return formatBlog(blog);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create blog in database.', error);
-    throw new Error('Database is currently unavailable. Please try again later.');
+    // Return more specific error messages
+    if (error.code === 'P2002') {
+      // Unique constraint violation
+      throw new Error(`A blog with slug "${data.slug}" already exists. Please use a different slug.`);
+    }
+    if (error.code === 'P2003') {
+      // Foreign key constraint violation
+      throw new Error('Invalid category or subcategory selected.');
+    }
+    // Return the actual error message for debugging
+    throw new Error(error.message || 'Database is currently unavailable. Please try again later.');
   }
 }
 
@@ -373,6 +387,7 @@ export async function updateBlog(id: string, data: {
   excerpt?: string;
   content?: string;
   featuredImage?: string;
+  photos?: string[];
   tags?: string[];
   author?: string;
   published?: boolean;
@@ -393,6 +408,7 @@ export async function updateBlog(id: string, data: {
     if (data.excerpt !== undefined) updates.excerpt = data.excerpt;
     if (data.content !== undefined) updates.content = data.content;
     if (data.featuredImage !== undefined) updates.featuredImage = data.featuredImage;
+    if (data.photos !== undefined) updates.photos = data.photos;
     if (data.tags !== undefined) updates.tags = data.tags;
     if (data.author !== undefined) updates.author = data.author;
     if (data.published !== undefined) updates.published = data.published;
