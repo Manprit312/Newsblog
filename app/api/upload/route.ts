@@ -60,13 +60,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure Cloudinary is configured
-    if (!cloudinary.config().cloud_name) {
+    // Ensure Cloudinary is configured (reconfigure to be safe)
+    try {
       cloudinary.config({
         cloud_name: cloudName,
         api_key: apiKey,
         api_secret: apiSecret,
       });
+      
+      // Verify configuration
+      const config = cloudinary.config();
+      if (!config.cloud_name || !config.api_key || !config.api_secret) {
+        throw new Error('Cloudinary configuration failed');
+      }
+    } catch (configError: any) {
+      console.error('Cloudinary configuration error:', configError);
+      return NextResponse.json(
+        { success: false, error: 'Image upload service configuration error. Please check environment variables.' },
+        { status: 500 }
+      );
     }
 
     let formData;
@@ -119,24 +131,52 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(bytes);
 
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'newsblogs',
-          resource_type: 'image',
-          timeout: 60000, // 60 second timeout
-        },
-        (error, result) => {
-          if (error) {
-            console.error('Cloudinary upload error:', error);
-            reject(error);
-          } else {
-            resolve(result);
-          }
+    // Wrap upload in Promise with timeout and better error handling
+    const result = await Promise.race([
+      new Promise((resolve, reject) => {
+        try {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'newsblogs',
+              resource_type: 'image',
+              timeout: 60000, // 60 second timeout
+            },
+            (error, result) => {
+              if (error) {
+                console.error('Cloudinary upload error:', {
+                  message: error.message,
+                  http_code: error.http_code,
+                  name: error.name,
+                });
+                reject(new Error(`Cloudinary upload failed: ${error.message || 'Unknown error'}`));
+              } else if (!result || !result.secure_url) {
+                reject(new Error('Cloudinary returned invalid response'));
+              } else {
+                resolve(result);
+              }
+            }
+          );
+          
+          // Handle stream errors
+          uploadStream.on('error', (streamError: any) => {
+            console.error('Upload stream error:', streamError);
+            reject(new Error(`Upload stream error: ${streamError.message || 'Unknown error'}`));
+          });
+          
+          uploadStream.end(buffer);
+        } catch (streamError: any) {
+          console.error('Failed to create upload stream:', streamError);
+          reject(new Error(`Failed to create upload stream: ${streamError.message || 'Unknown error'}`));
         }
-      );
-      
-      uploadStream.end(buffer);
+      }),
+      new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Upload timeout: Request took too long'));
+        }, 55000); // 55 second timeout (less than Cloudinary's 60s)
+      }),
+    ]).catch((error: any) => {
+      // Ensure all errors are properly formatted
+      throw new Error(error?.message || error?.toString() || 'Upload failed');
     });
 
     const uploadResult = result as any;
@@ -153,14 +193,29 @@ export async function POST(request: NextRequest) {
       publicId: uploadResult.public_id,
     });
   } catch (error: any) {
-    console.error('Upload error:', error);
+    // Log full error details for debugging
+    console.error('Upload error:', {
+      message: error?.message,
+      name: error?.name,
+      stack: error?.stack,
+      http_code: error?.http_code,
+    });
+    
     // Always return JSON, never HTML
+    const errorMessage = error?.message || error?.toString() || 'Failed to upload image. Please try again.';
+    
     return NextResponse.json(
       { 
         success: false, 
-        error: error?.message || error?.toString() || 'Failed to upload image. Please try again.' 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
       },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
     );
   }
 }
