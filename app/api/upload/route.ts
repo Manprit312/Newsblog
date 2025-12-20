@@ -21,23 +21,43 @@ export const maxDuration = 30; // Vercel max duration for Pro plan
 export const dynamic = 'force-dynamic'; // Ensure this is a dynamic route
 
 export async function POST(request: NextRequest) {
+  // Ensure we always return JSON, even on unexpected errors
+  // Wrap everything in try-catch to prevent Vercel from returning HTML error pages
   try {
-    // Check authentication
-    let user;
+    // Check authentication - wrap in try-catch to prevent HTML error pages
+    let user = null;
+    let authErrorOccurred = false;
+    
     try {
-      user = await getCurrentUser();
+      // Use Promise.resolve to catch any synchronous errors
+      user = await Promise.resolve(getCurrentUser()).catch((err) => {
+        authErrorOccurred = true;
+        console.error('Auth check promise error:', err?.message || err);
+        return null;
+      });
     } catch (authError: any) {
-      console.error('Auth check error:', authError);
-      return NextResponse.json(
-        { success: false, error: 'Authentication failed' },
-        { status: 401 }
-      );
+      // Log but don't throw - return JSON error instead
+      authErrorOccurred = true;
+      console.error('Auth check error:', authError?.message || authError);
     }
 
-    if (!user) {
+    // If auth check failed or user is null, return JSON error
+    if (authErrorOccurred || !user) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { 
+          success: false, 
+          error: authErrorOccurred 
+            ? 'Authentication check failed. Please log in again.' 
+            : 'Unauthorized. Please log in.',
+          code: authErrorOccurred ? 'AUTH_ERROR' : 'UNAUTHORIZED'
+        },
+        { 
+          status: 401,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          }
+        }
       );
     }
 
@@ -55,8 +75,17 @@ export async function POST(request: NextRequest) {
         }
       });
       return NextResponse.json(
-        { success: false, error: 'Image upload service is not configured. Please check environment variables (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API or CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET).' },
-        { status: 500 }
+        { 
+          success: false, 
+          error: 'Image upload service is not configured. Please check environment variables (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API or CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET).',
+          code: 'CONFIG_ERROR'
+        },
+        { 
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
@@ -76,8 +105,17 @@ export async function POST(request: NextRequest) {
     } catch (configError: any) {
       console.error('Cloudinary configuration error:', configError);
       return NextResponse.json(
-        { success: false, error: 'Image upload service configuration error. Please check environment variables.' },
-        { status: 500 }
+        { 
+          success: false, 
+          error: 'Image upload service configuration error. Please check environment variables.',
+          code: 'CONFIG_ERROR'
+        },
+        { 
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
@@ -85,10 +123,19 @@ export async function POST(request: NextRequest) {
     try {
       formData = await request.formData();
     } catch (formError: any) {
-      console.error('FormData parsing error:', formError);
+      console.error('FormData parsing error:', formError?.message || formError);
       return NextResponse.json(
-        { success: false, error: 'Invalid form data' },
-        { status: 400 }
+        { 
+          success: false, 
+          error: 'Invalid form data',
+          code: 'FORM_DATA_ERROR'
+        },
+        { 
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
@@ -96,16 +143,34 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json(
-        { success: false, error: 'No file provided' },
-        { status: 400 }
+        { 
+          success: false, 
+          error: 'No file provided',
+          code: 'NO_FILE'
+        },
+        { 
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
     // Validate file type
     if (!file.type || !file.type.startsWith('image/')) {
       return NextResponse.json(
-        { success: false, error: 'File must be an image' },
-        { status: 400 }
+        { 
+          success: false, 
+          error: 'File must be an image',
+          code: 'INVALID_FILE_TYPE'
+        },
+        { 
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
@@ -113,8 +178,17 @@ export async function POST(request: NextRequest) {
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { success: false, error: 'File size must be less than 10MB' },
-        { status: 400 }
+        { 
+          success: false, 
+          error: 'File size must be less than 10MB',
+          code: 'FILE_TOO_LARGE'
+        },
+        { 
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
@@ -122,10 +196,19 @@ export async function POST(request: NextRequest) {
     try {
       bytes = await file.arrayBuffer();
     } catch (bufferError: any) {
-      console.error('File buffer error:', bufferError);
+      console.error('File buffer error:', bufferError?.message || bufferError);
       return NextResponse.json(
-        { success: false, error: 'Failed to read file' },
-        { status: 500 }
+        { 
+          success: false, 
+          error: 'Failed to read file',
+          code: 'FILE_READ_ERROR'
+        },
+        { 
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
@@ -182,8 +265,17 @@ export async function POST(request: NextRequest) {
     const uploadResult = result as any;
     if (!uploadResult || !uploadResult.secure_url) {
       return NextResponse.json(
-        { success: false, error: 'Upload failed: Invalid response from image service' },
-        { status: 500 }
+        { 
+          success: false, 
+          error: 'Upload failed: Invalid response from image service',
+          code: 'INVALID_RESPONSE'
+        },
+        { 
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
@@ -191,29 +283,40 @@ export async function POST(request: NextRequest) {
       success: true,
       url: uploadResult.secure_url,
       publicId: uploadResult.public_id,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
   } catch (error: any) {
     // Log full error details for debugging
-    console.error('Upload error:', {
+    const errorDetails = {
       message: error?.message,
       name: error?.name,
-      stack: error?.stack,
       http_code: error?.http_code,
-    });
+    };
+    console.error('Upload error:', errorDetails);
     
-    // Always return JSON, never HTML
+    // Always return JSON, never HTML - this is critical for Vercel
     const errorMessage = error?.message || error?.toString() || 'Failed to upload image. Please try again.';
+    
+    // Sanitize error message to avoid exposing sensitive info
+    const safeErrorMessage = errorMessage.includes('<!DOCTYPE') 
+      ? 'Server error: Invalid response format. Please check server logs.'
+      : errorMessage;
     
     return NextResponse.json(
       { 
         success: false, 
-        error: errorMessage,
+        error: safeErrorMessage,
+        code: 'UPLOAD_ERROR',
         details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
       },
       { 
         status: 500,
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-store',
         }
       }
     );
