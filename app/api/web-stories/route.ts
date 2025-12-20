@@ -143,12 +143,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Format tags array properly for PostgreSQL TEXT[] type
+    const tagsArray = Array.isArray(tags) ? tags : (tags || []);
+    
+    // Use Prisma's array parameter binding - pass array directly and Prisma handles conversion
     const query = `
       INSERT INTO web_stories (
         title, slug, excerpt, cover_image, pages, author, published, featured,
         category_id, subcategory_id, tags, created_at, updated_at
       )
-      VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9, $10, $11::text[], NOW(), NOW())
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9, $10, $11, NOW(), NOW())
       RETURNING id, title, slug, excerpt, cover_image as "coverImage", pages, author, published, featured, views,
         category_id as "categoryId", subcategory_id as "subcategoryId", tags, created_at as "createdAt", updated_at as "updatedAt"
     `;
@@ -165,7 +169,7 @@ export async function POST(request: NextRequest) {
       featured !== undefined ? featured : false,
       categoryId ? parseInt(categoryId, 10) : null,
       subcategoryId ? parseInt(subcategoryId, 10) : null,
-      JSON.stringify(tags || [])
+      tagsArray // Pass as JavaScript array - Prisma converts to PostgreSQL array
     ) as any[];
 
     const story = result[0];

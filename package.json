@@ -10,6 +10,7 @@
     "db:setup": "node scripts/setup-database.js",
     "create-admin": "node scripts/create-admin.js",
     "setup-tables": "node scripts/setup-newsblogs-tables.js",
+    "create-web-stories-table": "node scripts/create-web-stories-table.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",

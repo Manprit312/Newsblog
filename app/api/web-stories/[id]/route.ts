@@ -209,8 +209,9 @@ export async function PUT(
       paramIndex++;
     }
     if (tags !== undefined) {
-      updates.push(`tags = $${paramIndex}::text[]`);
-      values.push(JSON.stringify(tags));
+      const tagsArray = Array.isArray(tags) ? tags : (tags || []);
+      updates.push(`tags = $${paramIndex}`);
+      values.push(tagsArray); // Pass as JavaScript array - Prisma converts to PostgreSQL array
       paramIndex++;
     }
 

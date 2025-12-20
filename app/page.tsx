@@ -236,6 +236,36 @@ export default async function Home() {
           </aside>
         </div>
 
+        {/* Web Stories Section */}
+        <section className="mt-8 sm:mt-12">
+          <div className="mb-6 pb-3 border-b-2 border-yellow-600">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-yellow-600 uppercase">WEB STORIES</h2>
+              <Link
+                href="/web-stories"
+                className="text-sm sm:text-base text-secondary-blue hover:text-secondary-blue-dark font-semibold"
+              >
+                View All →
+              </Link>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              Immersive visual stories coming soon. Check out our{' '}
+              <Link href="/web-stories" className="text-secondary-blue hover:underline font-semibold">
+                Web Stories
+              </Link>{' '}
+              section for the latest visual content.
+            </p>
+            <Link
+              href="/web-stories"
+              className="inline-block bg-secondary-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors text-sm sm:text-base"
+            >
+              Explore Web Stories
+            </Link>
+          </div>
+        </section>
+
         {/* Empty State */}
         {allBlogs.length === 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">

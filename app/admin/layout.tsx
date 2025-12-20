@@ -82,6 +82,7 @@ export default function AdminLayout({
   const navItems = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/admin/blogs", icon: FileText, label: "Blogs" },
+    { href: "/admin/web-stories", icon: FileText, label: "Web Stories" },
     { href: "/admin/blog-categories", icon: FileText, label: "Blog Categories" },
     { href: "/admin/categories", icon: FolderTree, label: "Header Categories" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
