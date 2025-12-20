@@ -16,6 +16,14 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Client-side file size validation (4.5MB for Vercel)
+    const maxSize = 4.5 * 1024 * 1024; // 4.5MB
+    if (file.size > maxSize) {
+      alert(`File size is too large. Maximum size is 4.5MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB. Please compress the image or use a smaller file.`);
+      e.target.value = ''; // Reset input
+      return;
+    }
+
     setUploading(true);
 
     try {
@@ -29,6 +37,12 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
 
       // Check if response is OK
       if (!response.ok) {
+        // Handle 413 Payload Too Large specifically
+        if (response.status === 413) {
+          alert('File size is too large. Vercel has a 4.5MB limit. Please compress your image or use a smaller file.');
+          return;
+        }
+        
         // Try to parse as JSON, but handle HTML error pages
         let errorMessage = 'Upload failed';
         try {
@@ -38,11 +52,19 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
             errorMessage = errorData.error || errorData.message || errorMessage;
           } else {
             // If it's not JSON (HTML error page), get status text
-            errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+            if (response.status === 413) {
+              errorMessage = 'File size is too large. Maximum size is 4.5MB.';
+            } else {
+              errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+            }
           }
         } catch (parseError) {
           console.error('Failed to parse error response:', parseError);
-          errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+          if (response.status === 413) {
+            errorMessage = 'File size is too large. Maximum size is 4.5MB.';
+          } else {
+            errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+          }
         }
         alert(errorMessage);
         return;

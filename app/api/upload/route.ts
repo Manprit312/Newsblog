@@ -174,14 +174,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (10MB limit)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Validate file size (4.5MB limit for Vercel - they have 4.5MB limit on Hobby plan)
+    // Vercel Pro plan allows up to 4.5MB for serverless functions
+    const maxSize = 4.5 * 1024 * 1024; // 4.5MB (Vercel's limit)
     if (file.size > maxSize) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'File size must be less than 10MB',
-          code: 'FILE_TOO_LARGE'
+          error: `File size must be less than 4.5MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB. Please compress the image or use a smaller file.`,
+          code: 'FILE_TOO_LARGE',
+          fileSize: file.size,
+          maxSize: maxSize
         },
         { 
           status: 400,
@@ -298,7 +301,20 @@ export async function POST(request: NextRequest) {
     console.error('Upload error:', errorDetails);
     
     // Always return JSON, never HTML - this is critical for Vercel
-    const errorMessage = error?.message || error?.toString() || 'Failed to upload image. Please try again.';
+    let errorMessage = error?.message || error?.toString() || 'Failed to upload image. Please try again.';
+    let statusCode = 500;
+    let errorCode = 'UPLOAD_ERROR';
+    
+    // Handle specific error cases
+    if (errorMessage.includes('413') || errorMessage.includes('Payload Too Large') || errorMessage.includes('Request Entity Too Large')) {
+      errorMessage = 'File size is too large. Vercel has a 4.5MB limit. Please compress your image or use a smaller file.';
+      statusCode = 413;
+      errorCode = 'PAYLOAD_TOO_LARGE';
+    } else if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
+      errorMessage = 'Upload timed out. Please try again with a smaller file.';
+      statusCode = 408;
+      errorCode = 'TIMEOUT';
+    }
     
     // Sanitize error message to avoid exposing sensitive info
     const safeErrorMessage = errorMessage.includes('<!DOCTYPE') 
@@ -309,11 +325,11 @@ export async function POST(request: NextRequest) {
       { 
         success: false, 
         error: safeErrorMessage,
-        code: 'UPLOAD_ERROR',
+        code: errorCode,
         details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
       },
       { 
-        status: 500,
+        status: statusCode,
         headers: {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-store',

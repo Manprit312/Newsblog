@@ -26,6 +26,7 @@ model Category {
   
   subcategories Subcategory[]
   blogs         Blog[]
+  webStories    WebStory[]
 
   @@index([slug])
   @@index([active])
@@ -47,6 +48,7 @@ model Subcategory {
   
   category      Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   blogs         Blog[]
+  webStories    WebStory[]
 
   @@unique([categoryId, slug])
   @@index([categoryId])
@@ -83,6 +85,34 @@ model Blog {
   @@index([published])
   @@index([slug])
   @@map("news_blogs")
+}
+
+// WebStory model for web stories (Google Web Stories format)
+model WebStory {
+  id            Int          @id @default(autoincrement())
+  title         String       @db.VarChar(500)
+  slug          String       @unique @db.VarChar(500)
+  excerpt       String?      @db.Text
+  coverImage    String?      @map("cover_image") @db.VarChar(1000)
+  pages         Json         // Array of story pages with content, images, etc.
+  author        String       @default("Admin") @db.VarChar(255)
+  published     Boolean      @default(false)
+  featured      Boolean      @default(false)
+  views         Int          @default(0)
+  categoryId    Int?         @map("category_id")
+  subcategoryId Int?         @map("subcategory_id")
+  tags          String[]     @default([])
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamp
+  updatedAt     DateTime     @updatedAt @map("updated_at") @db.Timestamp
+  
+  category      Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  @@index([categoryId])
+  @@index([subcategoryId])
+  @@index([published])
+  @@index([slug])
+  @@map("web_stories")
 }
 
 // Admin model for authentication (shared with geneveda-biosciences)
