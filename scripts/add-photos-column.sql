@@ -9,3 +9,5 @@ CREATE INDEX IF NOT EXISTS idx_news_blogs_photos ON news_blogs USING GIN (photos
 
 
 
+
+

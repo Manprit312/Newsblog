@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import ImageUpload from './ImageUpload';
 import MultipleImageUpload from './MultipleImageUpload';
@@ -61,9 +62,14 @@ interface Category {
 
 export default function BlogForm({ initialData }: BlogFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  
+  // Get blogCategory from URL params if present
+  const urlBlogCategory = searchParams?.get('blogCategory') || '';
+  
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     slug: initialData?.slug || '',
@@ -74,7 +80,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
     categoryId: initialData?.categoryId || null,
     subcategoryId: initialData?.subcategoryId || null,
     tags: initialData?.tags?.join(', ') || '',
-    editorialCategory: '', // Level 3 - Editorial category
+    editorialCategory: initialData?.tags?.includes(urlBlogCategory) ? urlBlogCategory : (urlBlogCategory || ''), // Level 3 - Editorial category
     author: initialData?.author || 'Admin',
     published: initialData?.published || false,
     featured: initialData?.featured || false,
@@ -238,9 +244,17 @@ export default function BlogForm({ initialData }: BlogFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
-            Category
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-semibold text-secondary-blue">
+              Header Category
+            </label>
+            <Link
+              href="/admin/categories"
+              className="text-xs text-secondary-blue hover:underline"
+            >
+              Manage Header Categories
+            </Link>
+          </div>
           {loadingCategories ? (
             <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100">
               Loading categories...
@@ -258,7 +272,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
               }}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
             >
-              <option value="">Select a category (optional)</option>
+              <option value="">Select a Header Category (optional)</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -267,13 +281,13 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             </select>
           )}
           <p className="text-xs text-gray-500 mt-1">
-            Categories appear in the website header navigation
+            Header Categories appear in the website header navigation
           </p>
         </div>
 
         <div>
           <label className="block text-sm font-semibold text-secondary-blue mb-2">
-            Subcategory
+            Header drop-down Category
           </label>
           <select
             value={formData.subcategoryId || ''}
@@ -284,7 +298,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             disabled={!formData.categoryId || availableSubcategories.length === 0}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
-            <option value="">Select a subcategory (optional)</option>
+            <option value="">Select a Header drop-down Category (optional)</option>
             {availableSubcategories.map((subcategory) => (
               <option key={subcategory.id} value={subcategory.id}>
                 {subcategory.name}
@@ -292,11 +306,11 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             ))}
           </select>
           <p className="text-xs text-gray-500 mt-1">
-            Subcategories appear as dropdown items in the header
+            Header drop-down Categories appear as dropdown items under Header Categories
           </p>
           {formData.categoryId && availableSubcategories.length === 0 && (
             <p className="text-xs text-yellow-600 mt-1">
-              No subcategories available for this category. Add them in Categories management.
+              No Header drop-down Categories available. Add them in Header Categories management.
             </p>
           )}
         </div>
@@ -304,15 +318,23 @@ export default function BlogForm({ initialData }: BlogFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
-            Editorial Category (Level 3)
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-semibold text-secondary-blue">
+              Blog Category
+            </label>
+            <Link
+              href="/admin/blog-categories"
+              className="text-xs text-secondary-blue hover:underline"
+            >
+              Manage Blog Categories
+            </Link>
+          </div>
           <select
             value={formData.editorialCategory}
             onChange={(e) => setFormData({ ...formData, editorialCategory: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
           >
-            <option value="">Select Editorial Category (Optional)</option>
+            <option value="">Select Blog Category (Optional)</option>
             {EDITORIAL_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
                 {cat}
@@ -320,7 +342,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             ))}
           </select>
           <p className="text-xs text-gray-500 mt-1">
-            Content-focused category for editorial organization
+            Blog Categories are independent from Header Categories and used for content organization
           </p>
         </div>
 

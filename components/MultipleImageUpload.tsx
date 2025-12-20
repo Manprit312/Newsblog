@@ -40,9 +40,15 @@ export default function MultipleImageUpload({
       if (!response.ok) {
         let errorMessage = 'Upload failed';
         try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
-        } catch {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorData.message || errorMessage;
+          } else {
+            errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+          }
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
           errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
         }
         alert(errorMessage);
@@ -51,11 +57,25 @@ export default function MultipleImageUpload({
 
       let data;
       try {
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          console.error('Non-JSON response:', text.substring(0, 200));
+          alert('Upload failed: Server returned invalid response format');
+          return;
+        }
+        
         const text = await response.text();
+        if (!text || text.trim().length === 0) {
+          console.error('Empty response from server');
+          alert('Upload failed: Empty response from server');
+          return;
+        }
+        
         data = JSON.parse(text);
       } catch (parseError) {
         console.error('Failed to parse response:', parseError);
-        alert('Upload failed: Invalid server response');
+        alert('Upload failed: Invalid JSON response from server. Please try again.');
         return;
       }
 

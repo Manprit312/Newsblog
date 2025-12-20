@@ -149,3 +149,5 @@ postgresql://postgres:manprit*@localhost:5432/newsblogs
 
 
 
+
+

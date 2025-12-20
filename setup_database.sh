@@ -30,3 +30,5 @@ echo "1. Set DATABASE_URL=postgresql://newsblogs_user:newsblogs2024@72.61.240.15
 echo "2. Run: npx prisma migrate dev"
 echo "3. Run: npx prisma generate"
 
+
+

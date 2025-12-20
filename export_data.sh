@@ -13,3 +13,5 @@ scp -o StrictHostKeyChecking=no manprit@72.61.240.156:/tmp/blogs_export.csv ./bl
 
 echo "Export complete! Data saved to blogs_export.csv"
 
+
+

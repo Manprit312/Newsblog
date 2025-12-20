@@ -46,7 +46,7 @@ export default function AdminCategoriesPage() {
   };
 
   const handleDelete = async (id: number, isSubcategory: boolean = false) => {
-    if (!confirm(`Are you sure you want to delete this ${isSubcategory ? 'subcategory' : 'category'}?`)) {
+    if (!confirm(`Are you sure you want to delete this ${isSubcategory ? 'Header drop-down Category' : 'Header Category'}?`)) {
       return;
     }
 
@@ -92,7 +92,7 @@ export default function AdminCategoriesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-secondary-blue">Categories & Subcategories</h1>
+        <h1 className="text-3xl font-bold text-secondary-blue">Header Categories</h1>
         <Link
           href="/admin/categories/new"
           className="bg-secondary-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors flex items-center gap-2"
@@ -159,7 +159,7 @@ export default function AdminCategoriesPage() {
                       className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
-                      Add Subcategory
+                      Add Header drop-down Category
                     </Link>
                     <button
                       onClick={() => handleDelete(category.id, false)}
@@ -224,6 +224,8 @@ export default function AdminCategoriesPage() {
     </div>
   );
 }
+
+
 
 
 

@@ -119,3 +119,5 @@ sudo -u postgres psql -d newsblogs -c "SELECT 1;"
 - Verify firewall allows port 5432
 - Check password is correct and URL-encoded
 
+
+
