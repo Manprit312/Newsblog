@@ -1,6 +1,10 @@
 import { getBlogs } from '@/lib/api';
 import BlogCard from '@/components/BlogCard';
 
+// Force dynamic rendering to show fresh content immediately (no caching)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Disable caching completely
+
 type Blog = {
   _id: string;
   title: string;

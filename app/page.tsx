@@ -5,6 +5,10 @@ import BlogCard from '@/components/BlogCard';
 import { getBlogs } from '@/lib/api';
 import { Clock, Eye, TrendingUp, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
+// Force dynamic rendering to show fresh content immediately (no caching)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Disable caching completely
+
 type Blog = {
   _id: string;
   title: string;

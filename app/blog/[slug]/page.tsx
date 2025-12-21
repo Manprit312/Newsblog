@@ -22,8 +22,10 @@ type Blog = {
   tags?: string[];
 };
 
-// Allow dynamic rendering if static generation fails
+// Force dynamic rendering to show fresh content immediately (no caching)
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
+export const revalidate = 0; // Disable caching completely
 
 export async function generateStaticParams() {
   try {
