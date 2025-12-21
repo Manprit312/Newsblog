@@ -130,6 +130,7 @@ export async function getGenevedaBlogs(options: { published?: boolean; featured?
 }
 
 export async function getBlogs(options: GetBlogsOptions = {}) {
+  const startTime = Date.now();
   try {
     const where: any = {};
 
@@ -187,7 +188,7 @@ export async function getBlogs(options: GetBlogsOptions = {}) {
     }
     orderBy.push({ createdAt: 'desc' });
 
-    const blogs = await prisma.blog.findMany({
+    const dbBlogs = await prisma.blog.findMany({
       where,
       include: {
         category: {
@@ -210,9 +211,19 @@ export async function getBlogs(options: GetBlogsOptions = {}) {
       take: options.limit,
     });
 
-    return blogs.map(formatBlog);
+    const blogs = dbBlogs.map(formatBlog);
+    const duration = Date.now() - startTime;
+    if (duration > 500) {
+      console.warn(`getBlogs took ${duration}ms (slow query)`, {
+        options,
+        blogCount: blogs.length,
+        isVercel: !!process.env.VERCEL,
+      });
+    }
+    return blogs;
   } catch (error: any) {
-    console.error('Failed to load blogs from database, returning empty list.', error);
+    const duration = Date.now() - startTime;
+    console.error(`Failed to load blogs from database after ${duration}ms:`, error);
     return [];
   }
 }

@@ -174,9 +174,9 @@ export default function BlogForm({ initialData }: BlogFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-secondary-blue mb-2">
+        <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
           Title *
         </label>
         <input
@@ -184,12 +184,12 @@ export default function BlogForm({ initialData }: BlogFormProps) {
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-secondary-blue mb-2">
+        <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
           Slug *
         </label>
         <input
@@ -197,12 +197,12 @@ export default function BlogForm({ initialData }: BlogFormProps) {
           value={formData.slug}
           onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
           required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-secondary-blue mb-2">
+        <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
           Excerpt *
         </label>
         <textarea
@@ -211,7 +211,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
           required
           maxLength={200}
           rows={3}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
         />
         <p className="text-sm text-gray-500 mt-1">
           {formData.excerpt.length}/200 characters
@@ -231,7 +231,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       />
 
       <div>
-        <label className="block text-sm font-semibold text-secondary-blue mb-2">
+        <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
           Content *
         </label>
         <ReactQuill
@@ -245,12 +245,12 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-semibold text-secondary-blue">
+            <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400">
               Header Category
             </label>
             <Link
               href="/admin/categories"
-              className="text-xs text-secondary-blue hover:underline"
+              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
             >
               Manage Header Categories
             </Link>
@@ -270,7 +270,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
                   subcategoryId: null // Reset subcategory when category changes
                 });
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             >
               <option value="">Select a Header Category (optional)</option>
               {categories.map((category) => (
@@ -286,7 +286,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Header drop-down Category
           </label>
           <select
@@ -296,7 +296,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
               setFormData({ ...formData, subcategoryId });
             }}
             disabled={!formData.categoryId || availableSubcategories.length === 0}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
           >
             <option value="">Select a Header drop-down Category (optional)</option>
             {availableSubcategories.map((subcategory) => (
@@ -319,12 +319,12 @@ export default function BlogForm({ initialData }: BlogFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-semibold text-secondary-blue">
+            <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400">
               Blog Category
             </label>
             <Link
               href="/admin/blog-categories"
-              className="text-xs text-secondary-blue hover:underline"
+              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
             >
               Manage Blog Categories
             </Link>
@@ -332,7 +332,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
           <select
             value={formData.editorialCategory}
             onChange={(e) => setFormData({ ...formData, editorialCategory: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           >
             <option value="">Select Blog Category (Optional)</option>
             {EDITORIAL_CATEGORIES.map((cat) => (
@@ -347,20 +347,20 @@ export default function BlogForm({ initialData }: BlogFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Author
           </label>
           <input
             type="text"
             value={formData.author}
             onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-secondary-blue mb-2">
+        <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
           Tags (comma-separated)
         </label>
         <input
@@ -368,7 +368,7 @@ export default function BlogForm({ initialData }: BlogFormProps) {
           value={formData.tags}
           onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
           placeholder="e.g., breaking, trending, featured"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
         />
         <p className="text-xs text-gray-500 mt-1">
           Additional tags for filtering and search
@@ -381,9 +381,9 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             type="checkbox"
             checked={formData.published}
             onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-            className="w-5 h-5 text-secondary-blue focus:ring-secondary-blue"
+            className="w-5 h-5 text-emerald-600 dark:text-emerald-400 focus:ring-emerald-500"
           />
-          <span className="text-sm font-semibold text-secondary-blue">Published</span>
+          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Published</span>
         </label>
 
         <label className="flex items-center gap-2 cursor-pointer">
@@ -391,9 +391,9 @@ export default function BlogForm({ initialData }: BlogFormProps) {
             type="checkbox"
             checked={formData.featured}
             onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-            className="w-5 h-5 text-secondary-blue focus:ring-secondary-blue"
+            className="w-5 h-5 text-emerald-600 dark:text-emerald-400 focus:ring-emerald-500"
           />
-          <span className="text-sm font-semibold text-secondary-blue">Featured</span>
+          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Featured</span>
         </label>
       </div>
 
@@ -401,14 +401,14 @@ export default function BlogForm({ initialData }: BlogFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-secondary-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Saving...' : initialData?._id ? 'Update Blog' : 'Create Blog'}
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/blogs')}
-          className="bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors"
+          className="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
         >
           Cancel
         </button>

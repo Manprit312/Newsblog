@@ -164,7 +164,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
     <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Title *
           </label>
           <input
@@ -172,12 +172,12 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Slug *
           </label>
           <input
@@ -185,24 +185,24 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
             value={formData.slug}
             onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Excerpt
           </label>
           <textarea
             value={formData.excerpt}
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
             rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Cover Image *
           </label>
           <ImageUpload
@@ -213,12 +213,12 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-semibold text-secondary-blue">
+            <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400">
               Header Category
             </label>
             <Link
               href="/admin/categories"
-              className="text-xs text-secondary-blue hover:underline"
+              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
             >
               Manage
             </Link>
@@ -238,7 +238,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
                   subcategoryId: null
                 });
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
             >
               <option value="">Select a Header Category (optional)</option>
               {categories.map((category) => (
@@ -251,7 +251,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Header drop-down Category
           </label>
           <select
@@ -261,7 +261,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
               setFormData({ ...formData, subcategoryId });
             }}
             disabled={!formData.categoryId || availableSubcategories.length === 0}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-sm sm:text-base"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed text-sm sm:text-base"
           >
             <option value="">Select a Header drop-down Category (optional)</option>
             {availableSubcategories.map((subcategory) => (
@@ -273,7 +273,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Tags (comma-separated)
           </label>
           <input
@@ -281,19 +281,19 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
             value={formData.tags}
             onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
             placeholder="e.g., breaking, trending, featured"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-secondary-blue mb-2">
+          <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             Author
           </label>
           <input
             type="text"
             value={formData.author}
             onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
           />
         </div>
       </div>
@@ -307,7 +307,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
           <button
             type="button"
             onClick={addPage}
-            className="bg-secondary-blue text-white px-3 sm:px-4 py-2 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors flex items-center gap-2 text-sm"
+            className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Add Page</span>
@@ -315,9 +315,9 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
         </div>
         <div className="space-y-4">
           {formData.pages.map((page, index) => (
-            <div key={index} className="border border-gray-300 rounded-lg p-4 sm:p-6 bg-gray-50">
+            <div key={index} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 sm:p-6 bg-gray-50 dark:bg-gray-700/50">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-secondary-blue text-sm sm:text-base">
+                <h3 className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">
                   Page {index + 1}
                 </h3>
                 {formData.pages.length > 1 && (
@@ -332,7 +332,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Page Title
                   </label>
                   <input
@@ -340,11 +340,11 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
                     value={page.title || ''}
                     onChange={(e) => updatePage(index, 'title', e.target.value)}
                     placeholder="Page title (optional)"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Page Image
                   </label>
                   <ImageUpload
@@ -353,7 +353,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Page Text/Content
                   </label>
                   <textarea
@@ -361,7 +361,7 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
                     onChange={(e) => updatePage(index, 'text', e.target.value)}
                     rows={4}
                     placeholder="Page content (HTML supported)"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent text-sm sm:text-base"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -376,9 +376,9 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
             type="checkbox"
             checked={formData.published}
             onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-            className="w-5 h-5 text-secondary-blue focus:ring-secondary-blue"
+            className="w-5 h-5 text-emerald-600 dark:text-emerald-400 focus:ring-emerald-500"
           />
-          <span className="text-sm font-semibold text-secondary-blue">Published</span>
+          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Published</span>
         </label>
 
         <label className="flex items-center gap-2 cursor-pointer">
@@ -386,9 +386,9 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
             type="checkbox"
             checked={formData.featured}
             onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-            className="w-5 h-5 text-secondary-blue focus:ring-secondary-blue"
+            className="w-5 h-5 text-emerald-600 dark:text-emerald-400 focus:ring-emerald-500"
           />
-          <span className="text-sm font-semibold text-secondary-blue">Featured</span>
+          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Featured</span>
         </label>
       </div>
 
@@ -396,14 +396,14 @@ export default function WebStoryForm({ initialData }: WebStoryFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full sm:w-auto bg-secondary-blue text-white px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+          className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           {loading ? 'Saving...' : initialData?._id || initialData?.id ? 'Update Web Story' : 'Create Web Story'}
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/web-stories')}
-          className="w-full sm:w-auto bg-gray-300 text-gray-700 px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors text-sm sm:text-base"
+          className="w-full sm:w-auto bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors text-sm sm:text-base"
         >
           Cancel
         </button>

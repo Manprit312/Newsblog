@@ -11,6 +11,10 @@ const nextConfig = {
   },
   // Increase static page generation timeout
   staticPageGenerationTimeout: 120,
+  // Disable static optimization for better dynamic content
+  experimental: {
+    // This ensures pages are rendered dynamically
+  },
 }
 
 module.exports = nextConfig

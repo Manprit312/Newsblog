@@ -74,12 +74,12 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+    <div className="w-full">
+      <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 sm:mb-6">
         Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           const colorClasses = {
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
             <Link
               key={index}
               href={stat.href}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6 hover:shadow-lg transition-shadow"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-3 rounded-lg ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
@@ -120,11 +120,11 @@ export default function AdminDashboard() {
 
       {/* Blog Categories */}
       {stats?.blogs?.categoryCounts && stats.blogs.categoryCounts.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3 sm:mb-4">
             Blogs by Category
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {stats.blogs.categoryCounts.map((cat: any, index: number) => (
               <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
@@ -140,11 +140,11 @@ export default function AdminDashboard() {
       )}
 
       {/* Quick Actions */}
-      <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="mt-6 sm:mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3 sm:mb-4">
           Quick Actions
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <Link
             href="/admin/blogs/new"
             className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-center"

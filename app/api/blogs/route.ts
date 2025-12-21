@@ -27,12 +27,26 @@ export async function GET(request: NextRequest) {
       skip: skip ? parseInt(skip) : undefined,
     });
 
-    return NextResponse.json({ success: true, blogs });
+    return NextResponse.json(
+      { success: true, blogs },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('GET /api/blogs error:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch blogs' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        },
+      }
     );
   }
 }
@@ -59,7 +73,17 @@ export async function POST(request: NextRequest) {
     }
 
     const blog = await createBlog(body);
-    return NextResponse.json({ success: true, blog }, { status: 201 });
+    return NextResponse.json(
+      { success: true, blog },
+      {
+        status: 201,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('POST /api/blogs error:', error);
     // Return appropriate status code based on error type

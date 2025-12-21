@@ -90,115 +90,116 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-secondary-blue">Header Categories</h1>
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">Header Categories</h1>
         <Link
           href="/admin/categories/new"
-          className="bg-secondary-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors flex items-center gap-2"
+          className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
         >
-          <Plus className="w-5 h-5" />
-          New Category
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span>New Category</span>
         </Link>
       </div>
 
       {categories.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <p className="text-gray-500 text-xl mb-4">No categories found.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 sm:p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl mb-4">No categories found.</p>
           <Link
             href="/admin/categories/new"
-            className="inline-block bg-secondary-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors"
+            className="inline-block bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
           >
             Create Your First Category
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="divide-y divide-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {categories.map((category) => (
-              <div key={category.id} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 flex-1">
+              <div key={category.id} className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
                     <button
                       onClick={() => toggleExpand(category.id)}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex-shrink-0 mt-1 sm:mt-0"
                     >
                       {expandedCategories.has(category.id) ? (
-                        <ChevronDown className="w-5 h-5" />
+                        <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
                       ) : (
-                        <ChevronRight className="w-5 h-5" />
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                       )}
                     </button>
-                    <div className="flex-1">
-                      <div className="font-semibold text-lg text-secondary-blue">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-base sm:text-lg text-emerald-600 dark:text-emerald-400">
                         {category.name}
                       </div>
-                      <div className="text-sm text-gray-500">
-                        Slug: {category.slug} | Order: {category.orderIndex} | 
+                      <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        <span className="break-all">Slug: {category.slug}</span> | Order: {category.orderIndex} | 
                         {category.active ? (
-                          <span className="text-green-600 ml-2">Active</span>
+                          <span className="text-green-600 dark:text-green-400 ml-2">Active</span>
                         ) : (
-                          <span className="text-gray-400 ml-2">Inactive</span>
+                          <span className="text-gray-400 dark:text-gray-500 ml-2">Inactive</span>
                         )}
                       </div>
                       {category.description && (
-                        <div className="text-sm text-gray-600 mt-1">{category.description}</div>
+                        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">{category.description}</div>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <Link
                       href={`/admin/categories/${category.id}/edit`}
-                      className="bg-primary-yellow text-secondary-blue px-4 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition-colors flex items-center gap-2"
+                      className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
                     >
-                      <Edit className="w-4 h-4" />
-                      Edit
+                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>Edit</span>
                     </Link>
                     <Link
                       href={`/admin/categories/${category.id}/subcategories/new`}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+                      className="bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-400 dark:hover:bg-emerald-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
                     >
-                      <Plus className="w-4 h-4" />
-                      Add Header drop-down Category
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Add Header drop-down Category</span>
+                      <span className="sm:hidden">Add Sub</span>
                     </Link>
                     <button
                       onClick={() => handleDelete(category.id, false)}
                       disabled={deleting === category.id}
-                      className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                      className="bg-red-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-1.5 sm:gap-2 disabled:opacity-50 text-xs sm:text-sm"
                     >
-                      <Trash2 className="w-4 h-4" />
-                      Delete
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>Delete</span>
                     </button>
                   </div>
                 </div>
 
                 {expandedCategories.has(category.id) && category.subcategories.length > 0 && (
-                  <div className="mt-4 ml-8 border-l-2 border-gray-200 pl-4 space-y-3">
+                  <div className="mt-4 ml-4 sm:ml-8 border-l-2 border-gray-200 dark:border-gray-700 pl-3 sm:pl-4 space-y-3">
                     {category.subcategories.map((subcategory) => (
                       <div
                         key={subcategory.id}
-                        className="flex items-center justify-between bg-gray-50 p-4 rounded-lg"
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-2 bg-gray-50 dark:bg-gray-700/50 p-3 sm:p-4 rounded-lg"
                       >
-                        <div className="flex-1">
-                          <div className="font-semibold text-secondary-blue">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">
                             {subcategory.name}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            Slug: {subcategory.slug} | Order: {subcategory.orderIndex} |
+                          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <span className="break-all">Slug: {subcategory.slug}</span> | Order: {subcategory.orderIndex} |
                             {subcategory.active ? (
-                              <span className="text-green-600 ml-2">Active</span>
+                              <span className="text-green-600 dark:text-green-400 ml-2">Active</span>
                             ) : (
-                              <span className="text-gray-400 ml-2">Inactive</span>
+                              <span className="text-gray-400 dark:text-gray-500 ml-2">Inactive</span>
                             )}
                           </div>
                           {subcategory.description && (
-                            <div className="text-sm text-gray-600 mt-1">{subcategory.description}</div>
+                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">{subcategory.description}</div>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
                           <Link
                             href={`/admin/subcategories/${subcategory.id}/edit`}
-                            className="bg-primary-yellow text-secondary-blue px-3 py-1.5 rounded font-semibold hover:bg-yellow-500 transition-colors flex items-center gap-1 text-sm"
+                            className="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 py-1.5 rounded font-semibold transition-colors flex items-center justify-center gap-1 text-xs sm:text-sm"
                           >
                             <Edit className="w-3 h-3" />
                             Edit
@@ -206,7 +207,7 @@ export default function AdminCategoriesPage() {
                           <button
                             onClick={() => handleDelete(subcategory.id, true)}
                             disabled={deleting === subcategory.id}
-                            className="bg-red-600 text-white px-3 py-1.5 rounded font-semibold hover:bg-red-700 transition-colors flex items-center gap-1 text-sm disabled:opacity-50"
+                            className="flex-1 sm:flex-initial bg-red-600 text-white px-3 py-1.5 rounded font-semibold hover:bg-red-700 transition-colors flex items-center justify-center gap-1 text-xs sm:text-sm disabled:opacity-50"
                           >
                             <Trash2 className="w-3 h-3" />
                             Delete

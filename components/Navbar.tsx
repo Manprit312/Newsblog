@@ -141,10 +141,6 @@ export default function Navbar() {
               >
                 <Search className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
-              <Link href="/admin/login" className="flex items-center gap-1 hover:text-yellow-300 transition-colors whitespace-nowrap">
-                <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">Admin</span>
-              </Link>
             </div>
           </div>
         </div>

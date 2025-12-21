@@ -168,7 +168,7 @@ export default function AdminLayout({
         </header>
 
         {/* Page content */}
-        <main className="p-6">{children}</main>
+        <main className="p-4 sm:p-6 overflow-x-hidden">{children}</main>
       </div>
 
       {/* Overlay for mobile */}

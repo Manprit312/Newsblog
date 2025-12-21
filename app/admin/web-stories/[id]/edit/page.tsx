@@ -45,7 +45,7 @@ export default function EditWebStoryPage() {
         <p className="text-gray-500 mb-4">Web story not found.</p>
         <Link
           href="/admin/web-stories"
-          className="text-secondary-blue hover:underline"
+          className="text-emerald-600 dark:text-emerald-400 hover:underline"
         >
           Back to Web Stories
         </Link>
@@ -54,15 +54,15 @@ export default function EditWebStoryPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-4 sm:mb-6 px-4 sm:px-0">
+    <div className="w-full">
+      <div className="flex items-center gap-4 mb-4 sm:mb-6">
         <Link
           href="/admin/web-stories"
           className="text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl sm:text-3xl font-bold text-secondary-blue">
+        <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">
           Edit Web Story
         </h1>
       </div>

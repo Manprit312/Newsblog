@@ -91,22 +91,22 @@ export default function AdminWebStoriesPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-secondary-blue">Web Stories</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your web stories</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">Web Stories</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your web stories</p>
         </div>
         <Link
           href="/admin/web-stories/new"
-          className="w-full sm:w-auto bg-secondary-blue text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors flex items-center justify-center gap-2"
+          className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>New Web Story</span>
         </Link>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -115,7 +115,7 @@ export default function AdminWebStoriesPage() {
               placeholder="Search web stories..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export default function AdminWebStoriesPage() {
             <select
               value={filterPublished}
               onChange={(e) => setFilterPublished(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-blue focus:border-transparent"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             >
               <option value="all">All</option>
               <option value="published">Published</option>
@@ -135,23 +135,23 @@ export default function AdminWebStoriesPage() {
 
       {/* Stories List */}
       {filteredStories.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-8 sm:p-12 text-center">
-          <p className="text-gray-500 text-lg sm:text-xl mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 sm:p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl mb-4">
             {searchTerm || filterPublished !== 'all' ? 'No web stories match your filters.' : 'No web stories found.'}
           </p>
           <Link
             href="/admin/web-stories/new"
-            className="inline-block bg-secondary-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-blue-dark transition-colors"
+            className="inline-block bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
           >
             Create Your First Web Story
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-secondary-blue text-white">
+          <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-300px)]">
+            <table className="w-full min-w-[800px]">
+              <thead className="bg-emerald-600 dark:bg-emerald-700 text-white sticky top-0 z-10">
                 <tr>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold">Cover</th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold">Title</th>
@@ -162,9 +162,9 @@ export default function AdminWebStoriesPage() {
                   <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredStories.map((story) => (
-                  <tr key={story._id} className="hover:bg-gray-50">
+                  <tr key={story._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                     <td className="px-4 sm:px-6 py-4">
                       {story.coverImage ? (
                         <div className="relative w-16 h-24 rounded overflow-hidden">
@@ -182,22 +182,22 @@ export default function AdminWebStoriesPage() {
                       )}
                     </td>
                     <td className="px-4 sm:px-6 py-4">
-                      <div className="font-semibold text-secondary-blue text-sm sm:text-base">
+                      <div className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">
                         {story.title}
                       </div>
                       {story.excerpt && (
-                        <div className="text-xs sm:text-sm text-gray-500 line-clamp-1 mt-1">
+                        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1">
                           {story.excerpt}
                         </div>
                       )}
                     </td>
                     <td className="px-4 sm:px-6 py-4">
                       {story.category ? (
-                        <span className="bg-primary-yellow text-secondary-blue px-2 py-1 rounded text-xs font-semibold">
+                        <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-1 rounded text-xs font-semibold">
                           {story.category.name}
                         </span>
                       ) : (
-                        <span className="text-gray-400 text-xs">—</span>
+                        <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
                       )}
                     </td>
                     <td className="px-4 sm:px-6 py-4">
@@ -231,7 +231,7 @@ export default function AdminWebStoriesPage() {
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/admin/web-stories/${story.id}/edit`}
-                          className="bg-primary-yellow text-secondary-blue px-3 py-1.5 rounded text-xs sm:text-sm font-semibold hover:bg-yellow-500 transition-colors flex items-center gap-1"
+                          className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 py-1.5 rounded text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1"
                         >
                           <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span className="hidden sm:inline">Edit</span>
@@ -253,7 +253,7 @@ export default function AdminWebStoriesPage() {
           </div>
 
           {/* Mobile Cards */}
-          <div className="md:hidden divide-y divide-gray-200">
+          <div className="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
             {filteredStories.map((story) => (
               <div key={story._id} className="p-4">
                 <div className="flex gap-4">
@@ -272,7 +272,7 @@ export default function AdminWebStoriesPage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-secondary-blue text-sm mb-1 line-clamp-2">
+                    <h3 className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm mb-1 line-clamp-2">
                       {story.title}
                     </h3>
                     {story.excerpt && (
@@ -296,7 +296,7 @@ export default function AdminWebStoriesPage() {
                         </span>
                       )}
                       {story.category && (
-                        <span className="bg-primary-yellow text-secondary-blue px-2 py-1 rounded text-xs font-semibold">
+                        <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-1 rounded text-xs font-semibold">
                           {story.category.name}
                         </span>
                       )}
@@ -313,7 +313,7 @@ export default function AdminWebStoriesPage() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/admin/web-stories/${story.id}/edit`}
-                        className="flex-1 bg-primary-yellow text-secondary-blue px-3 py-2 rounded text-xs font-semibold hover:bg-yellow-500 transition-colors text-center"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 py-2 rounded text-xs font-semibold transition-colors text-center"
                       >
                         Edit
                       </Link>
