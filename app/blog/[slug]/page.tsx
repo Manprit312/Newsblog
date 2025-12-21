@@ -105,15 +105,17 @@ export default async function BlogDetailPage({
         </div>
 
         {/* Featured Image */}
-        <div className="relative h-96 w-full mb-8 rounded-lg overflow-hidden shadow-lg">
-          <Image
-            src={blog.featuredImage}
-            alt={blog.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+        {blog.featuredImage && blog.featuredImage.trim() !== '' && (
+          <div className="relative h-96 w-full mb-8 rounded-lg overflow-hidden shadow-lg bg-gray-200 dark:bg-gray-700">
+            <Image
+              src={blog.featuredImage}
+              alt={blog.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        )}
 
         {/* Content */}
         <div
@@ -130,16 +132,18 @@ export default async function BlogDetailPage({
               <div className="h-1 flex-1 bg-primary-yellow"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {blog.photos.map((photo: string, index: number) => (
-                <div key={index} className="relative h-64 w-full rounded-lg overflow-hidden shadow-lg">
-                  <Image
-                    src={photo}
-                    alt={`${blog.title} - Photo ${index + 1}`}
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))}
+              {blog.photos
+                .filter((photo: string) => photo && photo.trim() !== '')
+                .map((photo: string, index: number) => (
+                  <div key={index} className="relative h-64 w-full rounded-lg overflow-hidden shadow-lg bg-gray-200 dark:bg-gray-700">
+                    <Image
+                      src={photo}
+                      alt={`${blog.title} - Photo ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
             </div>
           </div>
         )}

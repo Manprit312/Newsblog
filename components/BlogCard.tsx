@@ -21,13 +21,19 @@ export default function BlogCard({ blog }: BlogCardProps) {
   return (
     <Link href={`/blog/${blog.slug}`}>
       <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 dark:border-gray-700">
-        <div className="relative h-48 w-full overflow-hidden">
-          <Image
-            src={blog.featuredImage}
-            alt={blog.title}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
-          />
+        <div className="relative h-48 w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+          {blog.featuredImage ? (
+            <Image
+              src={blog.featuredImage}
+              alt={blog.title}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+              <span className="text-gray-400 text-sm">No Image</span>
+            </div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div className="absolute top-3 left-3">
             <span className="bg-black text-white px-3 py-1.5 text-xs font-bold uppercase tracking-wide">

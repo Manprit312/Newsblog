@@ -8,11 +8,27 @@ const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_C
 const apiKey = process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_API;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
+// Console log to check environment variables (server-side only)
+console.log('=== Cloudinary Environment Check ===');
+console.log('CLOUDINARY_CLOUD_NAME:', cloudName ? '✅ Set' : '❌ Missing');
+console.log('CLOUDINARY_API_KEY:', apiKey ? '✅ Set' : '❌ Missing');
+console.log('CLOUDINARY_API_SECRET:', apiSecret ? '✅ Set' : '❌ Missing');
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ Missing');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
+console.log('===================================');
+
 if (cloudName && apiKey && apiSecret) {
   cloudinary.config({
     cloud_name: cloudName,
     api_key: apiKey,
     api_secret: apiSecret,
+  });
+  console.log('✅ Cloudinary configured successfully');
+} else {
+  console.error('❌ Cloudinary configuration incomplete. Missing:', {
+    cloudName: !cloudName,
+    apiKey: !apiKey,
+    apiSecret: !apiSecret,
   });
 }
 

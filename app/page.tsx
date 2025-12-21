@@ -96,13 +96,19 @@ export default async function Home() {
                   {latestBlogs.slice(0, 4).map((blog: Blog) => (
                     <Link key={blog._id} href={`/blog/${blog.slug}`} className="block group">
                       <article className="flex gap-4 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0">
-                        <div className="relative h-32 w-full flex-shrink-0 overflow-hidden sm:w-32">
-                          <Image
-                            src={blog.featuredImage}
-                            alt={blog.title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
+                        <div className="relative h-32 w-full flex-shrink-0 overflow-hidden sm:w-32 bg-gray-200 dark:bg-gray-700">
+                          {blog.featuredImage ? (
+                            <Image
+                              src={blog.featuredImage}
+                              alt={blog.title}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                              <span className="text-gray-400 text-xs">No Image</span>
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1">
                           <div className="mb-2">
@@ -178,13 +184,19 @@ export default async function Home() {
                       className="block group"
                     >
                       <div className="flex gap-3">
-                      <div className="relative w-20 h-20 flex-shrink-0 overflow-hidden">
-                          <Image
-                            src={blog.featuredImage}
-                            alt={blog.title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
+                      <div className="relative w-20 h-20 flex-shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
+                          {blog.featuredImage ? (
+                            <Image
+                              src={blog.featuredImage}
+                              alt={blog.title}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                              <span className="text-gray-400 text-[10px]">No Image</span>
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">

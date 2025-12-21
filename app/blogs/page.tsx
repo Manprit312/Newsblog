@@ -23,12 +23,13 @@ interface BlogsPageProps {
 }
 
 export default async function BlogsPage({ searchParams }: BlogsPageProps) {
+ 
   const category = searchParams.category;
   const subcategory = searchParams.subcategory;
   const search = searchParams.search;
 
   let blogs = await getBlogs({ published: true }) as Blog[];
-
+ 
   // Filter by category if provided
   if (category) {
     blogs = blogs.filter((blog: Blog) => blog.category === category);

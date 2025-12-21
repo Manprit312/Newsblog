@@ -33,3 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_web_stories_created_at ON web_stories(created_at 
 COMMENT ON TABLE web_stories IS 'Web Stories for NewsBlogs - Google Web Stories format';
 COMMENT ON COLUMN web_stories.pages IS 'JSON array of story pages with title, text, and image fields';
 
+
+
+
+

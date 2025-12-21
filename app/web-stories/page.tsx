@@ -71,7 +71,7 @@ export default function WebStoriesPage() {
                 className="group relative block"
               >
                 <div className="relative aspect-[9/16] rounded-lg sm:rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                  {story.coverImage ? (
+                  {story.coverImage && story.coverImage.trim() !== '' ? (
                     <Image
                       src={story.coverImage}
                       alt={story.title}
@@ -152,7 +152,7 @@ export default function WebStoriesPage() {
                     className="group block bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                   >
                     <div className="relative aspect-video sm:aspect-[4/3]">
-                      {story.coverImage ? (
+                      {story.coverImage && story.coverImage.trim() !== '' ? (
                         <Image
                           src={story.coverImage}
                           alt={story.title}

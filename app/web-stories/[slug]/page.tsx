@@ -115,7 +115,7 @@ export default function WebStoryPage() {
       {/* Story Content */}
       <main className="container mx-auto px-4 py-6 sm:py-8 max-w-4xl">
         {/* Cover Image */}
-        {story.coverImage && (
+        {story.coverImage && story.coverImage.trim() !== '' && (
           <div className="relative w-full aspect-video sm:aspect-[16/9] rounded-lg sm:rounded-xl overflow-hidden mb-6 sm:mb-8 shadow-lg">
             <Image
               src={story.coverImage}
@@ -169,7 +169,7 @@ export default function WebStoryPage() {
                 key={index}
                 className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl overflow-hidden shadow-md"
               >
-                {page.image && (
+                {page.image && page.image.trim() !== '' && (
                   <div className="relative w-full aspect-video sm:aspect-[16/9]">
                     <Image
                       src={page.image}
