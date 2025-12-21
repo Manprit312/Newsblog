@@ -9,12 +9,19 @@ const apiKey = process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_API;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
 // Console log to check environment variables (server-side only)
-console.log('=== Cloudinary Environment Check ===');
-console.log('CLOUDINARY_CLOUD_NAME:', cloudName ? '✅ Set' : '❌ Missing');
-console.log('CLOUDINARY_API_KEY:', apiKey ? '✅ Set' : '❌ Missing');
-console.log('CLOUDINARY_API_SECRET:', apiSecret ? '✅ Set' : '❌ Missing');
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ Missing');
+// This runs when the module loads, so it will show in Vercel logs
+console.log('=== Cloudinary Environment Check (Module Load) ===');
 console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
+console.log('VERCEL_ENV:', process.env.VERCEL_ENV || 'Not on Vercel');
+console.log('CLOUDINARY_CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME ? '✅ Set' : '❌ Missing');
+console.log('NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:', process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? '✅ Set' : '❌ Missing');
+console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY ? '✅ Set' : '❌ Missing');
+console.log('CLOUDINARY_API:', process.env.CLOUDINARY_API ? '✅ Set' : '❌ Missing');
+console.log('CLOUDINARY_API_SECRET:', process.env.CLOUDINARY_API_SECRET ? '✅ Set' : '❌ Missing');
+console.log('Final values:');
+console.log('  - Cloud Name:', cloudName || 'MISSING');
+console.log('  - API Key:', apiKey ? 'SET' : 'MISSING');
+console.log('  - API Secret:', apiSecret ? 'SET' : 'MISSING');
 console.log('===================================');
 
 if (cloudName && apiKey && apiSecret) {
@@ -37,6 +44,14 @@ export const maxDuration = 30; // Vercel max duration for Pro plan
 export const dynamic = 'force-dynamic'; // Ensure this is a dynamic route
 
 export async function POST(request: NextRequest) {
+  // Log environment check on each request (for Vercel debugging)
+  console.log('=== Upload Request Environment Check ===');
+  console.log('VERCEL_ENV:', process.env.VERCEL_ENV || 'Not on Vercel');
+  console.log('Cloud Name available:', !!cloudName);
+  console.log('API Key available:', !!apiKey);
+  console.log('API Secret available:', !!apiSecret);
+  console.log('========================================');
+  
   // Ensure we always return JSON, even on unexpected errors
   // Wrap everything in try-catch to prevent Vercel from returning HTML error pages
   try {
@@ -233,27 +248,121 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(bytes);
 
+    // Log upload attempt details for Vercel debugging
+    console.log('Starting Cloudinary upload:', {
+      fileSize: buffer.length,
+      fileType: file.type,
+      fileName: file.name,
+      isVercel: !!process.env.VERCEL,
+      vercelEnv: process.env.VERCEL_ENV,
+    });
+
     // Wrap upload in Promise with timeout and better error handling
+    // Use base64 upload method for better compatibility with serverless functions
     const result = await Promise.race([
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         try {
+          // Try using upload_stream first (more efficient)
+          // If that fails, fall back to base64 upload
           const uploadStream = cloudinary.uploader.upload_stream(
             {
               folder: 'newsblogs',
               resource_type: 'image',
               timeout: 60000, // 60 second timeout
+              // Add Vercel-specific settings
+              use_filename: true,
+              unique_filename: true,
+              overwrite: false,
+              // Disable eager transformations for faster uploads
+              eager: undefined,
             },
             (error, result) => {
               if (error) {
-                console.error('Cloudinary upload error:', {
+                // Log full error details for debugging
+                console.error('Cloudinary upload_stream error:', {
                   message: error.message,
                   http_code: error.http_code,
                   name: error.name,
+                  isVercel: !!process.env.VERCEL,
+                  vercelEnv: process.env.VERCEL_ENV,
+                  error: error,
+                  // Try to extract more details if available
+                  ...(error.response && { response: error.response }),
+                  ...(error.statusCode && { statusCode: error.statusCode }),
                 });
-                reject(new Error(`Cloudinary upload failed: ${error.message || 'Unknown error'}`));
+                
+                // If upload_stream fails, try base64 upload as fallback
+                // This sometimes works better with serverless functions
+                console.log('Attempting fallback to base64 upload...');
+                const base64String = buffer.toString('base64');
+                const dataUri = `data:${file.type};base64,${base64String}`;
+                
+                cloudinary.uploader.upload(
+                  dataUri,
+                  {
+                    folder: 'newsblogs',
+                    resource_type: 'image',
+                    use_filename: true,
+                    unique_filename: true,
+                    overwrite: false,
+                  },
+                  (fallbackError, fallbackResult) => {
+                    if (fallbackError) {
+                      console.error('Cloudinary base64 upload also failed:', {
+                        message: fallbackError.message,
+                        http_code: fallbackError.http_code,
+                        name: fallbackError.name,
+                      });
+                      
+                      // Check if it's an authentication/configuration error
+                      let errorMessage = fallbackError.message || error.message || 'Unknown error';
+                      if (fallbackError.http_code === 401 || error.http_code === 401 || errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+                        errorMessage = 'Cloudinary authentication failed. Please check your API credentials and Cloudinary account settings.';
+                      } else if (fallbackError.http_code === 400 || error.http_code === 400 || errorMessage.includes('400')) {
+                        errorMessage = 'Invalid request to Cloudinary. Please check your file format and size.';
+                      } else if (fallbackError.http_code === 500 || error.http_code === 500 || errorMessage.includes('500') || errorMessage.includes('<!DOCTYPE')) {
+                        errorMessage = 'Cloudinary server error (500). This may indicate: 1) Invalid credentials, 2) Account restrictions, 3) Domain/IP blocking. Check Cloudinary dashboard Settings → Security for allowed domains/IPs.';
+                      } else if (errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
+                        errorMessage = 'Cloudinary upload timed out. This can happen on Vercel. Try with a smaller image or check your Cloudinary account limits.';
+                      }
+                      
+                      reject(new Error(`Cloudinary upload failed: ${errorMessage}`));
+                    } else if (!fallbackResult || !fallbackResult.secure_url) {
+                      reject(new Error('Cloudinary returned invalid response'));
+                    } else {
+                      console.log('✅ Cloudinary base64 upload successful (fallback method)');
+                      resolve(fallbackResult);
+                    }
+                  }
+                );
               } else if (!result || !result.secure_url) {
-                reject(new Error('Cloudinary returned invalid response'));
+                console.error('Cloudinary returned invalid result:', result);
+                // Try base64 fallback
+                const base64String = buffer.toString('base64');
+                const dataUri = `data:${file.type};base64,${base64String}`;
+                cloudinary.uploader.upload(
+                  dataUri,
+                  {
+                    folder: 'newsblogs',
+                    resource_type: 'image',
+                    use_filename: true,
+                    unique_filename: true,
+                  },
+                  (fallbackError, fallbackResult) => {
+                    if (fallbackError || !fallbackResult?.secure_url) {
+                      reject(new Error('Cloudinary returned invalid response'));
+                    } else {
+                      console.log('✅ Cloudinary base64 upload successful (fallback)');
+                      resolve(fallbackResult);
+                    }
+                  }
+                );
               } else {
+                console.log('✅ Cloudinary upload_stream successful:', {
+                  public_id: result.public_id,
+                  format: result.format,
+                  bytes: result.bytes,
+                });
                 resolve(result);
               }
             }
