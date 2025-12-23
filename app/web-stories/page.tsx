@@ -41,7 +41,7 @@ export default function WebStoriesPage() {
       <div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
         {/* Header */}
         <header className="mb-6 sm:mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-secondary-blue dark:text-primary-yellow mb-3 sm:mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-secondary-blue dark:text-yellow-600 mb-3 sm:mb-4">
             Web Stories
           </h1>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
@@ -138,7 +138,7 @@ export default function WebStoriesPage() {
         {/* Featured Stories Section */}
         {stories.filter((s: any) => s.featured).length > 0 && (
           <section className="mt-8 sm:mt-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-secondary-blue dark:text-primary-yellow mb-4 sm:mb-6 px-4 sm:px-0">
+            <h2 className="text-2xl sm:text-3xl font-bold text-secondary-blue dark:text-yellow-600 mb-4 sm:mb-6 px-4 sm:px-0">
               Featured Stories
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

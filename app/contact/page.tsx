@@ -6,7 +6,7 @@ export default function ContactPage() {
     <div className="bg-white dark:bg-gray-950">
       <div className="mx-auto max-w-5xl px-4 py-10">
         <header className="mb-8 space-y-3 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-secondary-blue dark:text-primary-yellow">
+          <h1 className="text-3xl font-bold tracking-tight text-secondary-blue dark:text-yellow-600">
             Contact Us
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-300">

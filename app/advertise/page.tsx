@@ -10,7 +10,7 @@ export default function AdvertisePage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full mb-4">
             <Megaphone className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-secondary-blue dark:text-primary-yellow mb-4">
+          <h1 className="text-4xl font-bold tracking-tight text-secondary-blue dark:text-yellow-600 mb-4">
             Advertise With Us
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -72,15 +72,15 @@ export default function AdvertisePage() {
               </div>
               <ul className="space-y-2 mb-4">
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Premium header and sidebar placements</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Multiple size options available</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>High click-through rates</span>
                 </li>
               </ul>
@@ -97,24 +97,24 @@ export default function AdvertisePage() {
               </div>
               <ul className="space-y-2 mb-4">
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Native content integration</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Editorial-quality sponsored articles</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Increased brand awareness</span>
                 </li>
               </ul>
             </div>
 
-            <div className="bg-white dark:bg-gray-900 rounded-xl border-2 border-green-400 dark:border-green-600 p-6 shadow-lg">
+            <div className="bg-white dark:bg-gray-900 rounded-xl border-2 border-yellow-400 dark:border-yellow-600 p-6 shadow-lg">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                  <Target className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+                  <Target className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-50">
                   Category Sponsorship
@@ -122,15 +122,15 @@ export default function AdvertisePage() {
               </div>
               <ul className="space-y-2 mb-4">
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Exclusive category branding</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Featured placement in category pages</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Long-term partnership opportunities</span>
                 </li>
               </ul>
@@ -147,15 +147,15 @@ export default function AdvertisePage() {
               </div>
               <ul className="space-y-2 mb-4">
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Direct email marketing</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>High engagement rates</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <span>Weekly or monthly campaigns</span>
                 </li>
               </ul>
@@ -252,6 +252,7 @@ export default function AdvertisePage() {
     </div>
   );
 }
+
 
 
 

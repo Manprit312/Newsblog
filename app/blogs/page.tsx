@@ -72,9 +72,9 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
     <div className="container mx-auto px-4 py-8 bg-white dark:bg-gray-900 min-h-screen">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-1 w-16 bg-primary-yellow"></div>
+          <div className="h-1 w-16 bg-yellow-600"></div>
           <h1 className="text-4xl font-bold text-secondary-blue">{pageTitle}</h1>
-          <div className="h-1 flex-1 bg-primary-yellow"></div>
+          <div className="h-1 flex-1 bg-yellow-600"></div>
         </div>
         <p className="text-gray-600 dark:text-gray-300 text-lg">
           {category
@@ -87,7 +87,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
           <div className="mt-4">
             <a
               href="/blogs"
-              className="text-secondary-blue hover:text-primary-yellow underline"
+              className="text-secondary-blue hover:text-yellow-600 underline"
             >
               ← View All Blogs
             </a>
@@ -111,14 +111,14 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
           </p>
           <a
             href={category ? `/blogs?category=${encodeURIComponent(category)}` : '/blogs'}
-            className="text-secondary-blue hover:text-primary-yellow underline mr-4"
+            className="text-secondary-blue hover:text-yellow-600 underline mr-4"
           >
             {category ? `View All ${category} Blogs` : 'View All Blogs'}
           </a>
           {category && (
             <a
               href="/blogs"
-              className="text-secondary-blue hover:text-primary-yellow underline"
+              className="text-secondary-blue hover:text-yellow-600 underline"
             >
               View All Categories
             </a>

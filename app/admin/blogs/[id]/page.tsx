@@ -79,7 +79,7 @@ export default function BlogDetailPage({ params }: { params: { id: string } }) {
         <div className="flex gap-2">
           <Link
             href={`/admin/blogs/${params.id}/edit`}
-            className="bg-primary-yellow text-secondary-blue px-4 py-2 rounded-lg font-semibold hover:bg-primary-yellow-dark transition-colors"
+            className="bg-yellow-600 text-secondary-blue px-4 py-2 rounded-lg font-semibold hover:bg-yellow-600-dark transition-colors"
           >
             Edit
           </Link>
@@ -107,7 +107,7 @@ export default function BlogDetailPage({ params }: { params: { id: string } }) {
           <div>
             <h2 className="text-2xl font-bold text-secondary-blue mb-2">{blog.title}</h2>
             <div className="flex items-center gap-2 mb-4">
-              <span className="bg-primary-yellow text-secondary-blue px-3 py-1 rounded-full text-sm font-semibold">
+              <span className="bg-yellow-600 text-secondary-blue px-3 py-1 rounded-full text-sm font-semibold">
                 {blog.category}
               </span>
               {blog.featured && (
@@ -118,7 +118,7 @@ export default function BlogDetailPage({ params }: { params: { id: string } }) {
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
                   blog.published
-                    ? 'bg-green-100 text-green-800'
+                    ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-yellow-100 text-yellow-800'
                 }`}
               >

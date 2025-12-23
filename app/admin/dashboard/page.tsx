@@ -29,7 +29,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e3a8a]"></div>
       </div>
     );
   }
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
       title: "Published Blogs",
       value: stats?.blogs?.published || 0,
       icon: Eye,
-      color: "green",
+      color: "yellow",
       href: "/admin/blogs",
     },
     {
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       title: "Categories",
       value: stats?.categories?.total || 0,
       icon: FolderTree,
-      color: "emerald",
+      color: "blue",
       href: "/admin/categories",
       subtitle: `${stats?.categories?.active || 0} active`,
     },
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-4 sm:mb-6">
         Dashboard
       </h1>
 
@@ -83,11 +83,11 @@ export default function AdminDashboard() {
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           const colorClasses = {
-            blue: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
-            green: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400",
+            blue: "bg-blue-100 dark:bg-blue-900/30 text-[#1e3a8a] dark:text-blue-400",
+            green: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400",
             yellow: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400",
             purple: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400",
-            emerald: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400",
+            emerald: "bg-blue-100 dark:bg-blue-900/30 text-[#1e3a8a] dark:text-blue-400",
             indigo: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400",
           };
 
@@ -121,13 +121,13 @@ export default function AdminDashboard() {
       {/* Blog Categories */}
       {stats?.blogs?.categoryCounts && stats.blogs.categoryCounts.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3 sm:mb-4">
+          <h2 className="text-lg sm:text-xl font-bold text-[#1e3a8a] dark:text-blue-400 mb-3 sm:mb-4">
             Blogs by Category
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {stats.blogs.categoryCounts.map((cat: any, index: number) => (
               <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                <p className="text-2xl font-bold text-[#1e3a8a] dark:text-blue-400">
                   {cat.count}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -141,13 +141,13 @@ export default function AdminDashboard() {
 
       {/* Quick Actions */}
       <div className="mt-6 sm:mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
-        <h2 className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3 sm:mb-4">
+        <h2 className="text-lg sm:text-xl font-bold text-[#1e3a8a] dark:text-blue-400 mb-3 sm:mb-4">
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <Link
             href="/admin/blogs/new"
-            className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-center"
+            className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-[#1e3a8a] dark:hover:border-blue-500 transition-colors text-center"
           >
             <FileText className="w-8 h-8 mx-auto mb-2 text-gray-400" />
             <p className="font-medium text-gray-700 dark:text-gray-300">
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
           </Link>
           <Link
             href="/admin/categories/new"
-            className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-center"
+            className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-[#1e3a8a] dark:hover:border-blue-500 transition-colors text-center"
           >
             <FolderTree className="w-8 h-8 mx-auto mb-2 text-gray-400" />
             <p className="font-medium text-gray-700 dark:text-gray-300">
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
           </Link>
           <Link
             href="/admin/settings"
-            className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-center"
+            className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-[#1e3a8a] dark:hover:border-blue-500 transition-colors text-center"
           >
             <FileText className="w-8 h-8 mx-auto mb-2 text-gray-400" />
             <p className="font-medium text-gray-700 dark:text-gray-300">

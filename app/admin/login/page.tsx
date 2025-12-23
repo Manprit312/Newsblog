@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function AdminLoginPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     // Force light theme and ensure visibility
@@ -148,22 +150,50 @@ export default function AdminLoginPage() {
               <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "0.5rem" }}>
                 Password
               </label>
-              <input
-                type="password"
-                required
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                style={{
-                  width: "100%",
-                  padding: "0.625rem 1rem",
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #d1d5db",
-                  borderRadius: "0.5rem",
-                  color: "#111827",
-                  fontSize: "1rem",
-                }}
-                placeholder="••••••••"
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "0.625rem 1rem",
+                    paddingRight: "2.5rem",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "0.5rem",
+                    color: "#111827",
+                    fontSize: "1rem",
+                  }}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "0.75rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#6b7280",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0.25rem",
+                  }}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button
@@ -171,7 +201,7 @@ export default function AdminLoginPage() {
               disabled={loading}
               style={{
                 width: "100%",
-                backgroundColor: loading ? "#34d399" : "#059669",
+                backgroundColor: loading ? "#3b82f6" : "#1e3a8a",
                 color: "#ffffff",
                 padding: "0.75rem 1.5rem",
                 borderRadius: "0.5rem",
@@ -183,12 +213,12 @@ export default function AdminLoginPage() {
               }}
               onMouseOver={(e) => {
                 if (!loading) {
-                  e.currentTarget.style.backgroundColor = "#047857";
+                  e.currentTarget.style.backgroundColor = "#1e40af";
                 }
               }}
               onMouseOut={(e) => {
                 if (!loading) {
-                  e.currentTarget.style.backgroundColor = "#059669";
+                  e.currentTarget.style.backgroundColor = "#1e3a8a";
                 }
               }}
             >
@@ -201,7 +231,7 @@ export default function AdminLoginPage() {
               href="/"
               style={{
                 fontSize: "0.875rem",
-                color: "#059669",
+                color: "#1e3a8a",
                 textDecoration: "none",
               }}
               onMouseEnter={(e) => {

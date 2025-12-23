@@ -102,7 +102,7 @@ export default function AdminSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -113,7 +113,7 @@ export default function AdminSettingsPage() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Site Settings</h1>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          className="bg-[#1e3a8a] hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
         >
           <Plus className="w-5 h-5" />
           Add Setting
@@ -151,7 +151,7 @@ export default function AdminSettingsPage() {
             <div className="flex items-end">
               <button
                 onClick={handleAdd}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+                className="w-full bg-[#1e3a8a] hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
               >
                 Add
               </button>
@@ -220,7 +220,7 @@ export default function AdminSettingsPage() {
                     {editing === setting.id ? (
                       <button
                         onClick={() => handleSave(setting.id)}
-                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 mr-2"
+                        className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 mr-2"
                       >
                         <Save className="w-5 h-5 inline" />
                       </button>
@@ -230,7 +230,7 @@ export default function AdminSettingsPage() {
                           setEditing(setting.id);
                           setEditValue(setting.setting_value || "");
                         }}
-                        className="text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 mr-2"
+                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-2"
                       >
                         <Edit className="w-5 h-5 inline" />
                       </button>
@@ -251,6 +251,7 @@ export default function AdminSettingsPage() {
     </div>
   );
 }
+
 
 
 

@@ -66,3 +66,5 @@ While this ensures instant updates, it means pages are rendered on every request
 
 For now, `revalidate = 0` ensures blogs appear immediately after creation.
 
+
+

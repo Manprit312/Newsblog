@@ -86,3 +86,5 @@ For Vercel + PostgreSQL, use:
 
 The current code changes help, but connection pooling is the real solution for serverless.
 
+
+

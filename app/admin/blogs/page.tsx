@@ -25,10 +25,10 @@ export default async function AdminBlogsPage() {
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">All Blogs</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">All Blogs</h1>
         <Link
           href="/admin/blogs/new"
-          className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base whitespace-nowrap"
+          className="bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base whitespace-nowrap"
         >
           + New Blog
         </Link>
@@ -39,7 +39,7 @@ export default async function AdminBlogsPage() {
           <p className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl mb-4">No blogs found.</p>
           <Link
             href="/admin/blogs/new"
-            className="inline-block bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            className="inline-block bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
           >
             Create Your First Blog
           </Link>
@@ -48,7 +48,7 @@ export default async function AdminBlogsPage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-250px)]">
             <table className="w-full min-w-[800px]">
-            <thead className="bg-emerald-600 dark:bg-emerald-700 text-white sticky top-0 z-10">
+            <thead className="bg-[#1e3a8a] dark:bg-blue-700 text-white sticky top-0 z-10">
               <tr>
                 <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold">Image</th>
                 <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold">Title</th>
@@ -79,7 +79,7 @@ export default async function AdminBlogsPage() {
                     )}
                   </td>
                   <td className="px-4 sm:px-6 py-4">
-                    <div className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400 text-sm sm:text-base">
                       {blog.title}
                     </div>
                     <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1">
@@ -87,7 +87,7 @@ export default async function AdminBlogsPage() {
                     </div>
                   </td>
                   <td className="px-4 sm:px-6 py-4">
-                    <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-1 rounded text-xs font-semibold">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-semibold">
                       {blog.category}
                     </span>
                   </td>
@@ -96,7 +96,7 @@ export default async function AdminBlogsPage() {
                       <span
                         className={`px-2 py-1 rounded text-xs font-semibold ${
                           blog.published
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                             : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                         }`}
                       >
@@ -119,7 +119,7 @@ export default async function AdminBlogsPage() {
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Link
                         href={`/admin/blogs/${blog._id}/edit`}
-                        className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 py-1 rounded text-xs sm:text-sm font-semibold transition-colors text-center"
+                        className="bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-3 py-1 rounded text-xs sm:text-sm font-semibold transition-colors text-center"
                       >
                         Edit
                       </Link>

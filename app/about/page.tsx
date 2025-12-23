@@ -8,7 +8,7 @@ export default function AboutPage() {
       <div className="mx-auto max-w-5xl px-4 py-10">
         {/* Header */}
         <header className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-secondary-blue dark:text-primary-yellow mb-4">
+          <h1 className="text-4xl font-bold tracking-tight text-secondary-blue dark:text-yellow-600 mb-4">
             About Us
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -64,8 +64,8 @@ export default function AboutPage() {
             </div>
 
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
-                <Award className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mb-4">
+                <Award className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-2">
                 Excellence

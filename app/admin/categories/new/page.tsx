@@ -63,17 +63,17 @@ export default function NewCategoryPage() {
       <div className="mb-6">
         <Link
           href="/admin/categories"
-          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-500 mb-4 inline-block"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-500 mb-4 inline-block"
         >
           ← Back to Categories
         </Link>
-        <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">New Category</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">New Category</h1>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+            <label className="block text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2">
               Name *
             </label>
             <input
@@ -81,13 +81,13 @@ export default function NewCategoryPage() {
               required
               value={formData.name}
               onChange={(e) => handleNameChange(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., Technology"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+            <label className="block text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2">
               Slug *
             </label>
             <input
@@ -95,34 +95,34 @@ export default function NewCategoryPage() {
               required
               value={formData.slug}
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., technology"
             />
             <p className="text-xs text-gray-500 mt-1">URL-friendly version of the name</p>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+            <label className="block text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Optional description for this category"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+            <label className="block text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2">
               Order Index
             </label>
             <input
               type="number"
               value={formData.orderIndex}
               onChange={(e) => setFormData({ ...formData, orderIndex: parseInt(e.target.value) || 0 })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-500 mt-1">Lower numbers appear first in the menu</p>
           </div>
@@ -133,9 +133,9 @@ export default function NewCategoryPage() {
               id="active"
               checked={formData.active}
               onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-              className="w-4 h-4 text-emerald-600 dark:text-emerald-400 border-gray-300 dark:border-gray-600 rounded focus:ring-emerald-500"
+              className="w-4 h-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
             />
-            <label htmlFor="active" className="ml-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+            <label htmlFor="active" className="ml-2 text-sm font-semibold text-blue-600 dark:text-blue-400">
               Active (show in navigation)
             </label>
           </div>
@@ -144,7 +144,7 @@ export default function NewCategoryPage() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+              className="bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
             >
               {loading ? 'Creating...' : 'Create Category'}
             </button>

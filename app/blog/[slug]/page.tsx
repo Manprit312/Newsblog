@@ -85,7 +85,7 @@ export default async function BlogDetailPage({
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span className="bg-primary-yellow text-secondary-blue px-3 py-1 rounded-full text-sm font-semibold">
+            <span className="bg-yellow-600 text-secondary-blue px-3 py-1 rounded-full text-sm font-semibold">
               {blog.category}
             </span>
             {blog.featured && (
@@ -129,9 +129,9 @@ export default async function BlogDetailPage({
         {blog.photos && blog.photos.length > 0 && (
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-1 w-16 bg-primary-yellow"></div>
+              <div className="h-1 w-16 bg-yellow-600"></div>
               <h2 className="text-2xl font-bold text-secondary-blue dark:text-blue-400">Photo Gallery</h2>
-              <div className="h-1 flex-1 bg-primary-yellow"></div>
+              <div className="h-1 flex-1 bg-yellow-600"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {blog.photos
@@ -169,9 +169,9 @@ export default async function BlogDetailPage({
       {filteredRelated.length > 0 && (
         <div className="mt-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-1 w-16 bg-primary-yellow"></div>
+            <div className="h-1 w-16 bg-yellow-600"></div>
             <h2 className="text-3xl font-bold text-secondary-blue dark:text-blue-400">Related News</h2>
-            <div className="h-1 flex-1 bg-primary-yellow"></div>
+            <div className="h-1 flex-1 bg-yellow-600"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {filteredRelated.slice(0, 3).map((relatedBlog: Blog) => (

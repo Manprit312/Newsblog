@@ -92,10 +92,10 @@ export default function AdminCategoriesPage() {
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">Header Categories</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">Header Categories</h1>
         <Link
           href="/admin/categories/new"
-          className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+          className="w-full sm:w-auto bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
         >
           <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>New Category</span>
@@ -107,7 +107,7 @@ export default function AdminCategoriesPage() {
           <p className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl mb-4">No categories found.</p>
           <Link
             href="/admin/categories/new"
-            className="inline-block bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            className="inline-block bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
           >
             Create Your First Category
           </Link>
@@ -130,13 +130,13 @@ export default function AdminCategoriesPage() {
                       )}
                     </button>
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-base sm:text-lg text-emerald-600 dark:text-emerald-400">
+                      <div className="font-semibold text-base sm:text-lg text-blue-600 dark:text-blue-400">
                         {category.name}
                       </div>
                       <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
                         <span className="break-all">Slug: {category.slug}</span> | Order: {category.orderIndex} | 
                         {category.active ? (
-                          <span className="text-green-600 dark:text-green-400 ml-2">Active</span>
+                          <span className="text-yellow-600 dark:text-yellow-400 ml-2">Active</span>
                         ) : (
                           <span className="text-gray-400 dark:text-gray-500 ml-2">Inactive</span>
                         )}
@@ -149,14 +149,14 @@ export default function AdminCategoriesPage() {
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <Link
                       href={`/admin/categories/${category.id}/edit`}
-                      className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
+                      className="bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
                     >
                       <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>Edit</span>
                     </Link>
                     <Link
                       href={`/admin/categories/${category.id}/subcategories/new`}
-                      className="bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-400 dark:hover:bg-emerald-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
+                      className="bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
                     >
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span className="hidden sm:inline">Add Header drop-down Category</span>
@@ -181,13 +181,13 @@ export default function AdminCategoriesPage() {
                         className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-2 bg-gray-50 dark:bg-gray-700/50 p-3 sm:p-4 rounded-lg"
                       >
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">
+                          <div className="font-semibold text-blue-600 dark:text-blue-400 text-sm sm:text-base">
                             {subcategory.name}
                           </div>
                           <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
                             <span className="break-all">Slug: {subcategory.slug}</span> | Order: {subcategory.orderIndex} |
                             {subcategory.active ? (
-                              <span className="text-green-600 dark:text-green-400 ml-2">Active</span>
+                              <span className="text-yellow-600 dark:text-yellow-400 ml-2">Active</span>
                             ) : (
                               <span className="text-gray-400 dark:text-gray-500 ml-2">Inactive</span>
                             )}
@@ -199,7 +199,7 @@ export default function AdminCategoriesPage() {
                         <div className="flex items-center gap-2 w-full sm:w-auto">
                           <Link
                             href={`/admin/subcategories/${subcategory.id}/edit`}
-                            className="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-3 py-1.5 rounded font-semibold transition-colors flex items-center justify-center gap-1 text-xs sm:text-sm"
+                            className="flex-1 sm:flex-initial bg-[#1e3a8a] hover:bg-blue-700 dark:bg-[#1e3a8a] dark:hover:bg-blue-800 text-white px-3 py-1.5 rounded font-semibold transition-colors flex items-center justify-center gap-1 text-xs sm:text-sm"
                           >
                             <Edit className="w-3 h-3" />
                             Edit
