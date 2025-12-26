@@ -139,10 +139,10 @@ export default function Navbar() {
       <div className="bg-[#1e3a8a] text-white sticky top-0 z-50" style={{ overflow: 'visible' }}>
         <div className="container mx-auto px-2 sm:px-4 max-w-7xl" style={{ overflow: 'visible' }}>
           <div className="flex items-center justify-between py-2 sm:py-3 gap-2 relative" style={{ overflow: 'visible' }}>
-            {/* Left Side - Hamburger Menu (Mobile) */}
+            {/* Left Side - Hamburger Menu */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden text-white p-2 hover:bg-blue-700 rounded transition-colors flex-shrink-0"
+              className="text-white p-2 hover:bg-blue-700 rounded transition-colors flex-shrink-0"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -409,117 +409,136 @@ export default function Navbar() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Menu - Dark Blue Background */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden bg-[#1e3a8a] text-white shadow-lg max-h-[calc(100vh-200px)] overflow-y-auto">
-            <div className="container mx-auto px-4 py-4 space-y-1">
-              {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="mb-4">
-                <div className="relative">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-600 rounded-l-md z-10"></div>
-                  <input
-                    type="text"
-                    placeholder="Search news..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-4 py-2.5 pl-12 border border-blue-500 rounded-md text-gray-800 focus:outline-none focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 transition-all bg-white"
-                  />
-                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                </div>
-              </form>
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
-              {/* Mobile Nav Links */}
-              <Link
-                href="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
-                  isActive('/')
-                    ? 'text-white border-yellow-600 bg-blue-700'
-                    : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
-                }`}
-              >
-                Home
-              </Link>
-              
-              {loadingCategories ? (
-                <div className="px-4 py-3 text-sm text-white/70">Loading categories...</div>
-              ) : (
-                categories.map((category) => (
-                <div key={category.name} className="space-y-1">
-                  <div className="flex items-center justify-between">
-                  <Link
-                    href={category.href}
-                      onClick={() => {
-                        if (!category.subcategories) {
-                          setMobileMenuOpen(false);
-                        }
-                      }}
-                      className={`flex-1 block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
-                      pathname.includes(category.href.split('?')[0])
-                          ? 'text-white border-yellow-600 bg-blue-700'
-                          : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
-                    }`}
-                  >
-                    {category.name}
-                  </Link>
-                  {category.subcategories && (
-                      <button
-                        onClick={() => setMobileDropdown(mobileDropdown === category.name ? null : category.name)}
-                        className="px-4 py-3 text-white/90 hover:text-white transition-colors"
-                        aria-label="Toggle submenu"
-                      >
-                        <ChevronDown className={`w-4 h-4 transition-transform ${mobileDropdown === category.name ? 'rotate-180' : ''}`} />
-                      </button>
-                    )}
-                  </div>
-                  {category.subcategories && mobileDropdown === category.name && (
-                    <div className="pl-6 space-y-1 bg-blue-800">
-                      {category.subcategories.map((sub) => (
-                        <Link
-                          key={sub.href}
-                          href={sub.href}
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            setMobileDropdown(null);
-                          }}
-                          className="block px-4 py-2 text-sm text-white/80 hover:bg-blue-700 hover:text-white transition-colors"
-                        >
-                          {sub.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))
-              )}
-              
-              <Link
-                href="/blogs"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
-                  isActive('/blogs')
-                    ? 'text-white border-yellow-600 bg-blue-700'
-                    : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
-                }`}
-              >
-                News
-              </Link>
-
-              <Link
-                href="/web-stories"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
-                  isActive('/web-stories')
-                    ? 'text-white border-yellow-600 bg-blue-700'
-                    : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
-                }`}
-              >
-                Web Stories
-              </Link>
-            </div>
+      {/* Sidebar Menu - Dark Blue Background */}
+      <div className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-[#1e3a8a] text-white shadow-2xl z-50 overflow-y-auto transition-transform duration-300 ease-in-out ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="container mx-auto px-4 py-4 space-y-1">
+          {/* Close Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 hover:bg-blue-700 rounded transition-colors"
+              aria-label="Close menu"
+            >
+              <X size={24} />
+            </button>
           </div>
-        )}
+          
+          {/* Mobile Search */}
+          <form onSubmit={handleSearch} className="mb-4">
+            <div className="relative">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-600 rounded-l-md z-10"></div>
+              <input
+                type="text"
+                placeholder="Search news..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2.5 pl-12 border border-blue-500 rounded-md text-gray-800 focus:outline-none focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 transition-all bg-white"
+              />
+              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            </div>
+          </form>
+
+          {/* Mobile Nav Links */}
+          <Link
+            href="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
+              isActive('/')
+                ? 'text-white border-yellow-600 bg-blue-700'
+                : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
+            }`}
+          >
+            Home
+          </Link>
+          
+          {loadingCategories ? (
+            <div className="px-4 py-3 text-sm text-white/70">Loading categories...</div>
+          ) : (
+            categories.map((category) => (
+            <div key={category.name} className="space-y-1">
+              <div className="flex items-center justify-between">
+              <Link
+                href={category.href}
+                onClick={() => {
+                  if (!category.subcategories) {
+                    setMobileMenuOpen(false);
+                  }
+                }}
+                className={`flex-1 block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
+                pathname.includes(category.href.split('?')[0])
+                    ? 'text-white border-yellow-600 bg-blue-700'
+                    : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
+                  }`}
+              >
+                {category.name}
+              </Link>
+              {category.subcategories && (
+                  <button
+                    onClick={() => setMobileDropdown(mobileDropdown === category.name ? null : category.name)}
+                    className="px-4 py-3 text-white/90 hover:text-white transition-colors"
+                    aria-label="Toggle submenu"
+                  >
+                    <ChevronDown className={`w-4 h-4 transition-transform ${mobileDropdown === category.name ? 'rotate-180' : ''}`} />
+                  </button>
+                )}
+              </div>
+              {category.subcategories && mobileDropdown === category.name && (
+                <div className="pl-6 space-y-1 bg-blue-800">
+                  {category.subcategories.map((sub) => (
+                    <Link
+                      key={sub.href}
+                      href={sub.href}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setMobileDropdown(null);
+                      }}
+                      className="block px-4 py-2 text-sm text-white/80 hover:bg-blue-700 hover:text-white transition-colors"
+                    >
+                      {sub.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+          )}
+          
+          <Link
+            href="/blogs"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
+              isActive('/blogs')
+                ? 'text-white border-yellow-600 bg-blue-700'
+                : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
+            }`}
+          >
+            News
+          </Link>
+
+          <Link
+            href="/web-stories"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`block px-4 py-3 font-semibold text-sm transition-colors border-l-4 ${
+              isActive('/web-stories')
+                ? 'text-white border-yellow-600 bg-blue-700'
+                : 'text-white/90 border-transparent hover:bg-blue-700 hover:text-white'
+            }`}
+          >
+            Web Stories
+          </Link>
+        </div>
       </div>
     </>
   );

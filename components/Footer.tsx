@@ -144,7 +144,7 @@ export default function Footer() {
         <div className="border-t border-white/20 mt-8 sm:mt-12 pt-6 sm:pt-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-xs sm:text-sm">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-              <p>&copy; {currentYear} NewsBlogs. All rights reserved.</p>
+              <p className="text-white opacity-100">&copy; {currentYear} NewsBlogs. All rights reserved.</p>
               <p className="text-white">
                 Developed By{' '}
                 <a

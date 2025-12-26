@@ -5,6 +5,57 @@ import { getBlogBySlug, getBlogs } from '@/lib/api';
 import BlogCard from '@/components/BlogCard';
 import ViewIncrementer from '@/components/ViewIncrementer';
 
+// Function to process HTML content and add target="_blank" to external links
+function processBlogContent(content: string): string {
+  // Use regex to find all anchor tags and process them
+  return content.replace(/<a\s+([^>]*?)href=["']([^"']*?)["']([^>]*?)>/gi, (match, beforeHref, href, afterHref) => {
+    // Check if it's an external link
+    // External links: start with http://, https://, www., or mailto:
+    // Not external: start with /, #, or are empty
+    const isExternal = /^(https?:\/\/|www\.|mailto:)/i.test(href) || 
+                       (href && !href.startsWith('/') && !href.startsWith('#') && !href.startsWith('?'));
+    
+    if (isExternal) {
+      let processedHref = href;
+      
+      // If link starts with www. but doesn't have protocol, add https://
+      if (/^www\./i.test(href)) {
+        processedHref = 'https://' + href;
+      }
+      
+      // Check if target="_blank" already exists
+      const hasTarget = /target\s*=\s*["']_blank["']/i.test(match);
+      // Check if rel already exists
+      const hasRel = /rel\s*=/i.test(match);
+      
+      // Reconstruct the anchor tag with updated href
+      let processedMatch = match;
+      
+      // Update href if it was modified (www. -> https://www.)
+      if (processedHref !== href) {
+        processedMatch = processedMatch.replace(
+          /href=["']([^"']*?)["']/i,
+          `href="${processedHref}"`
+        );
+      }
+      
+      // Add target="_blank" if not present
+      if (!hasTarget) {
+        processedMatch = processedMatch.replace(/>$/, ' target="_blank">');
+      }
+      
+      // Add rel="noopener noreferrer" if not present
+      if (!hasRel) {
+        processedMatch = processedMatch.replace(/>$/, ' rel="noopener noreferrer">');
+      }
+      
+      return processedMatch;
+    }
+    
+    return match;
+  });
+}
+
 type Blog = {
   _id: string;
   title: string;
@@ -122,7 +173,7 @@ export default async function BlogDetailPage({
         {/* Content */}
         <div
           className="prose prose-lg max-w-none mb-12 prose-headings:text-secondary-blue dark:prose-headings:text-blue-400 prose-a:text-secondary-blue dark:prose-a:text-blue-400 prose-strong:text-secondary-blue dark:prose-strong:text-blue-400 prose-img:rounded-lg prose-img:shadow-lg prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-li:text-gray-700 dark:prose-li:text-gray-300"
-          dangerouslySetInnerHTML={{ __html: blog.content }}
+          dangerouslySetInnerHTML={{ __html: processBlogContent(blog.content) }}
         />
 
         {/* Additional Photos Gallery */}
